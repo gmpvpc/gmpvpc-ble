@@ -1,0 +1,19 @@
+{
+  "name": "gmpvpc-back",
+  "version": "0.0.1",
+  "description": "This software connects to TI SensorTag and stores data in DB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gmpvpc.ddns.net:gmpvpc/gmpvpc-back.git"
+  },
+  "author": "Gautier Rouleau, Gwénolé Le Hénaf, Simon Arques",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "async": "^2.6.0",
+    "sensortag": "^1.3.0"
+  }
+}
