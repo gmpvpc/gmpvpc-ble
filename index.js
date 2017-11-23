@@ -48,11 +48,11 @@ SensorTag.discover(function(sensorTag) {
         });
       },
       function(callback) {
-        console.log('DisableGyroscope');
+        console.log('Disabling gyroscope...');
         sensorTag.disableGyroscope(callback);
       },
       function(callback) {
-        console.log('enableAccelerometer');
+        console.log('Enabling accelerometer...');
         sensorTag.enableAccelerometer(callback);
       },
       function(callback) {
@@ -66,23 +66,23 @@ SensorTag.discover(function(sensorTag) {
           // console.log('\tz = %d G', z.toFixed(1));
         });
 
-        console.log('setAccelerometerPeriod');
+        console.log('Setting accelerometer report period');
         sensorTag.setAccelerometerPeriod(500, function(error) {
-          console.log('notifyAccelerometer');
+          console.log('Notifying accelerometer');
           sensorTag.notifyAccelerometer(function(error) {
             setTimeout(function() {
-              console.log('unnotifyAccelerometer');
+              console.log('Unnotifying accelerometer');
               sensorTag.unnotifyAccelerometer(callback);
             }, 20000);
           });
         });
       },
       function(callback) {
-        console.log('disableAccelerometer');
+        console.log('Disabling accelerometer...');
         sensorTag.disableAccelerometer(callback);
       },
       function(callback) {
-        console.log('disconnect');
+        console.log('Disconnecting...');
         sensorTag.disconnect(callback);
       }
   ]);
