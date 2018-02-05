@@ -1,36 +1,37 @@
+import {Point} from "./point";
+
 export class DataSeries{
     constructor() {
-        this.m_dataPoints = [];
+        this.points = [];
         this.cursor = 0;
-        this.observer = null;
     }
 
-    get dataPoints() {
-        return this.m_dataPoints;
+    addAccelero(x,y,z) {
+        this.isPointComplete();
+        this.points[this.cursor].accelero.fromXYZ(x,y,z);
     }
 
-    addAcceleroData(x,y,z) {
-        this.m_dataPoints[cursor].accelero = { X: x, Y: y, Z: z };
+    addGyro(x,y,z) {
+        this.isPointComplete();
+        this.points[this.cursor].gyro.fromXYZ(x,y,z);
     }
 
-    addGyroData(x,y,z) {
-        this.m_dataPoints[cursor].gyro = { X: x, Y: y, Z: z };
+    addMagneto(x,y,z) {
+        this.isPointComplete();
+        this.points[this.cursor].magneto.fromXYZ(x,y,z);
     }
 
-    addMagnetoData(x,y,z) {
-        this.m_dataPoints[cursor].magneto = { X: x, Y: y, Z: z };
-    }
+    isPointComplete() {
+        if(this.points[this.cursor] === undefined)
+            this.points[this.cursor] = new Point();
 
-    isDataPointComplete() {
-        if(this.m_dataPoints[this.cursor].gyro != undefined &&
-            this.m_dataPoints[this.cursor].accelero != undefined &&
-            this.m_dataPoints[this.cursor].magneto != undefined) {
+        if(!this.points[this.cursor].accelero.isEmpty() &&
+            !this.points[this.cursor].gyro.isEmpty() &&
+            !this.points[this.cursor].magneto.isEmpty()) {
+            console.log(this.points[this.cursor]);
 
-            if(this.isDataPointComplete())
-                this.cursor++;
-            
-            if(this.m_dataPoints[cursor] == undefined)
-                this.m_dataPoints[cursor] = {};
+            this.cursor++;
+            this.points[this.cursor] = new Point();
         }
     }
-};
+}
