@@ -1,29 +1,37 @@
 import { DataSeries } from './data-series';
 
 // var id = 'cc78ab7e7c84';
-var id = 'cc78ab7e8484';
+const id = 'cc78ab7e8484';
 
 // var address = 'cc:78:ab:7e:7c:84';
-var address = 'cc:78:ab:7e:84:84';
+const address = 'cc:78:ab:7e:84:84';
 
-var reportPeriod = 500; // report period in milliseconds
+const reportPeriod = 500; // report period in milliseconds
 
-var recordDuration = 5000;// recording duration in milliseconds
+const recordDuration = 5000;// recording duration in milliseconds
 
-var async = require('async');
-
-var accelero = [];
-var gyro = [];
-var magneto = [];
-var dataSet = [];
-
-var dS = new DataSeries();
+let async = require('async');
 
 // handle connexion and data reception
 console.log('Waiting for bluetooth...');
-var SensorTag = require('sensortag');
+let SensorTag = require('sensortag');
 
-var AHRS = require('ahrs');
+let AHRS = require('ahrs');
+
+let madgwick = new AHRS({
+    sampleInterval: 1/ reportPeriod / 1000, // Hz
+    algorithm: 'Madgwick',
+    beta: 0.4,
+    kp: 0.5,
+});
+
+const updateAHRS = () => {
+    const p = dataSeries.getCurrentPoint();
+    madgwick.update(p.gyro.x, p.gyro.y, p.gyro.z, p.accelero.x, p.accelero.y, p.accelero.z, p.magneto.x, p.magneto.y, p.magneto.z);
+    console.log(madgwick.toVector());
+};
+
+let dataSeries = new DataSeries(updateAHRS);
 
 console.log('Discovering BLE devices...');
 SensorTag.discover(function(sensorTag) {
@@ -74,19 +82,13 @@ SensorTag.discover(function(sensorTag) {
         },
         function(callback) {
             sensorTag.on('accelerometerChange', function(x, y, z) {
-                // console.log('\tx = ' + x.toFixed(1) + ' G' + '\ty = ' + y.toFixed(1) + ' G' + '\tz = ' + z.toFixed(1) + ' G\t < ACCELERO' );
-                // accelero.push({ X : x, Y : y, Z : z });
-                dS.addAccelero(x,y,z);
+                dataSeries.addAccelero(x,y,z);
             });
             sensorTag.on('gyroscopeChange', function(x, y, z) {
-                // console.log('\tx = ' + x.toFixed(1) + ' °/s' + '\ty = ' + y.toFixed(1) + ' °/s' + '\tz = ' + z.toFixed(1) + ' °/s\t < GYRO');
-                // gyro.push({ X : x, Y : y, Z : z });
-                dS.addGyro(x,y,z);
+                dataSeries.addGyro(x,y,z);
             });
             sensorTag.on('magnetometerChange', function(x, y, z) {
-                // console.log('\tx = ' + x.toFixed(1) + ' ' + '\ty = ' + y.toFixed(1) + ' ' + '\tz = ' + z.toFixed(1) + ' \t < MAGNETO' );
-                // magneto.push({ X : x, Y : y, Z : z });
-                dS.addMagneto(x,y,z);
+                dataSeries.addMagneto(x,y,z);
             });
             callback();
         },
@@ -124,38 +126,8 @@ SensorTag.discover(function(sensorTag) {
             console.log('Disconnecting...');
             sensorTag.disconnect(callback);
         },
-        function(callback) {
-            processData();
-            callback();
-        },
         function() {
             process.exit(0);
         }
     ]);
 });
-
-var processData = () => {
-    // console.log("Accelero points: " + accelero.length +", Gyro points: " + gyro.length + ", Magneto points: " + magneto.length);
-    // console.log(dS.points);
-
-
-
-    // var madgwick = new AHRS({
-    //     sampleInterval: 5, // Hz
-    //     algorithm: 'Madgwick',
-    //     beta: 0.4,
-    //     kp: 0.5,
-
-    // for(let i = 0; i < accelero.length; i++) {
-    //     madgwick.update(gyro[i].X * Math.PI / 180, gyro[i].Y * Math.PI / 180, gyro[i].Z * Math.PI / 180,
-    //         accelero[i].X, accelero[i].Y, accelero[i].Z,
-    //         magneto[i].X, magneto[i].Y, magneto[i].Z);
-    //
-    //     madgwick.getQuaternion();
-    //     console.log(madgwick.toVector());
-    // }
-};
-
-var updateAHRS = () => {
-
-};

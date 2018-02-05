@@ -1,9 +1,10 @@
 import {Point} from "./point";
 
 export class DataSeries{
-    constructor() {
+    constructor(callback) {
         this.points = [];
         this.cursor = 0;
+        this.callback = callback;
     }
 
     addAccelero(x,y,z) {
@@ -28,10 +29,15 @@ export class DataSeries{
         if(!this.points[this.cursor].accelero.isEmpty() &&
             !this.points[this.cursor].gyro.isEmpty() &&
             !this.points[this.cursor].magneto.isEmpty()) {
-            console.log(this.points[this.cursor]);
+
+            setTimeout(() => { this.callback() }, 1);
 
             this.cursor++;
             this.points[this.cursor] = new Point();
         }
+    }
+
+    getCurrentPoint(){
+        return this.points[this.cursor];
     }
 }
