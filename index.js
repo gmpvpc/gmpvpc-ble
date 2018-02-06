@@ -62,6 +62,9 @@ let madgwick = new AHRS({
     ki: 0
 });
 
+/**
+ * Cette fonction update la librairie AHRS et envoie un event a socket-IO pour trasmettre la donnee
+ */
 const updateAHRS = () => {
     const p = dataSeries.getCurrentPoint();
     madgwick.update(p.gyro.x, p.gyro.y, p.gyro.z, p.accelero.x, p.accelero.y, p.accelero.z, p.magneto.x, p.magneto.y, p.magneto.z);
@@ -82,6 +85,10 @@ SensorTag.discover(function(sensorTag) {
         console.log('Disconnected !');
     });
 
+    // Mais qu'est-ce que c'est async ?
+    // https://github.com/sandeepmistry/node-sensortag/blob/master/test-cc2650-io.js
+    // On utilise async pour attendre que chacune des fonctions de la librairie node-sensortag ait terminé de s'exécuter
+    // Il faudra trouver une facon plus générique de se connecter aux sensors à l'avenir
     async.series([
         function (callback) {
             console.log('Connecting to SensorTag...');
@@ -99,6 +106,13 @@ SensorTag.discover(function(sensorTag) {
             console.log('Enabling magnetometer...');
             sensorTag.enableMagnetometer(callback);
         },
+
+        /**
+         * APRES AVOIR ACTIVÉ LES SENSORS IL FAUT DÉFINIR LA FRÉQUENCE DE COLLECTE DES DONNÉES
+         * ET NOTIFIER LE SensorTag DE CETTE MODIFICATION, SANS QUOI IL NE FERA RIEN.
+         * NB: il faut faire cela pour chaque sensor. A priori l'ordre de notification est le meme que
+         * l'ordre de récupération des données
+         */
         function(callback) {
             console.log('Setting accelerometer report period');
             sensorTag.setAccelerometerPeriod(reportPeriod, function(error) {
@@ -121,6 +135,9 @@ SensorTag.discover(function(sensorTag) {
                 sensorTag.notifyMagnetometer(callback);
             });
         },
+        /**
+         * ICI on ajoute les données à notre DataSet à mesure qu'on les recoit
+         */
         function(callback) {
             sensorTag.on('accelerometerChange', function(x, y, z) {
                 dataSeries.addAccelero(x,y,z);
@@ -134,11 +151,14 @@ SensorTag.discover(function(sensorTag) {
             callback();
         },
         function(callback) {
-            // console.log("On patiente 5s ...");
-            // setTimeout(function(){
-            //     callback();
-            // }, recordDuration);
+            console.log("On récolte les données pendant " + recordDuration / 1000 + "s ...");
+            setTimeout(function(){
+                callback();
+            }, recordDuration);
         },
+        /**
+         * Pour terminer la communication en beauté, on désactive les sensors un à un
+         */
         function(callback) {
             console.log('Unnotifying accelerometer...');
             sensorTag.unnotifyAccelerometer(callback);
@@ -168,7 +188,7 @@ SensorTag.discover(function(sensorTag) {
             sensorTag.disconnect(callback);
         },
         function() {
-            process.exit(0);
+            process.exit(0); // Cette fonction permet de quitter le programme NodeJS
         }
     ]);
 });

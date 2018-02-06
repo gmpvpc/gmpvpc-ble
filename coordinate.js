@@ -1,3 +1,6 @@
+/**
+ * Cette classe représente une coordonnée tridimensionnelle
+ */
 export class Coordinate {
     constructor(){
         this.x = null;

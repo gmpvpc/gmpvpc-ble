@@ -1,3 +1,8 @@
+/**
+ * DEBUT du code inspiré de la documentation suivante:
+ * https://threejs.org/docs/index.html#manual/introduction/Creating-a-scene
+ */
+
 var scene = new THREE.Scene();
 
 var scene = new THREE.Scene();
@@ -28,12 +33,21 @@ var animate = function (x, y, z) {
     renderer.render(scene, camera);
 };
 
+/**
+ * FIN du code pompé sur la doc de three.js
+ */
 
-const socket = io();
-socket.on('message', function (data) {
-    document.getElementById('console').innerText += data + "\n";
-});
 
+
+const socket = io(); // on ouvre une websocket pour recevoir les données du serveur en temps réel (ou presque)
+// socket.on('message', function (data) {
+    // document.getElementById('console').innerText += data + "\n"; // j'affiche le message dans une div
+// });
+
+/**
+ * Cette section permet d'exploiter les données reçus du serveur
+ * pour mettre à jour la rotation du cube au fur et à mesure que les données arrivent
+ */
 socket.on('broadcast', function (data) {
     // document.getElementById('console').innerText += JSON.stringify(data) + "\n";
     console.log(data.heading.toFixed(2), data.pitch.toFixed(2), data.roll.toFixed(2));

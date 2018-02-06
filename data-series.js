@@ -1,10 +1,15 @@
 import {Point} from "./point";
 
+/**
+ * Cette classe permet de stocker l'ensemble des points collectés dans un tableau d'objets
+ * On ajoute une donnée (accelero, gyro ou magneto) en utilisant les fonctions ci-dessous pour tester si
+ * le point est complet
+ */
 export class DataSeries{
     constructor(callback) {
         this.points = [];
         this.cursor = 0;
-        this.callback = callback;
+        this.observer = callback;
     }
 
     addAccelero(x,y,z) {
@@ -22,6 +27,9 @@ export class DataSeries{
         this.points[this.cursor].magneto.fromXYZ(x,y,z);
     }
 
+    /**
+     * Cette fonction permet de notifier l'observeur (Socket-IO)
+     */
     isPointComplete() {
         if(this.points[this.cursor] === undefined)
             this.points[this.cursor] = new Point();
@@ -30,7 +38,7 @@ export class DataSeries{
             !this.points[this.cursor].gyro.isEmpty() &&
             !this.points[this.cursor].magneto.isEmpty()) {
 
-            setTimeout(() => { this.callback() }, 1);
+            setTimeout(() => { this.observer() }, 1);
 
             this.cursor++;
             this.points[this.cursor] = new Point();
