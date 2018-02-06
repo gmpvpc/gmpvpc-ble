@@ -1,6 +1,10 @@
 
 # Created by https://www.gitignore.io/api/node
 
+#IntelliJ IDEA
+*.iml
+.idea
+
 ### Node ###
 # Logs
 logs
@@ -8,6 +12,8 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+
 
 # Runtime data
 pids
@@ -68,3 +74,9 @@ typings/
 # Builds
 
 dist/
+
+#Influxdb
+chronograf-v1.db
+
+#PlantUML
+*.puml
