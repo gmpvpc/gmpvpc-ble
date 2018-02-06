@@ -10,7 +10,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.getElementById('canvas').appendChild(renderer.domElement);
 
 var geometry = new THREE.BoxGeometry( 3, 1, 2 );
-var material = new THREE.MeshBasicMaterial( { color: 0xFF7300 } );
+var material = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh( geometry, material );
 
 scene.add( cube );
