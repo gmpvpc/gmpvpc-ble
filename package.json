@@ -8,11 +8,12 @@
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Gautier Rouleau, Gwénolé Le Hénaf, Simon Arques",
+  "author": "Gautier Rouleau, Gwénolé Le Hénaff, Simon Arques",
   "license": "UNLICENSED",
   "dependencies": {
     "ahrs": "^1.1.6",
     "async": "^2.6.0",
+    "influx": "^5.0.7",
     "sensortag": "^1.3.0"
   },
   "devDependencies": {
