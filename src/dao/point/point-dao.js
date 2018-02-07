@@ -5,6 +5,16 @@ export class PointDAO {
     constructor() {
         this.influxdb = null;
         this.connect();
+        this.createDb();
+    }
+
+    createDb() {
+        this.influxdb.getDatabaseNames()
+            .then(names => {
+                if (!names.includes(PointDaoConfig.POINT_DB)) {
+                    return this.influxdb.createDatabase(PointDaoConfig.POINT_DB);
+                }
+            });
     }
 
     connect() {
@@ -18,7 +28,7 @@ export class PointDAO {
                     tags: PointDaoConfig.POINT_TAGS
                 }
             ]
-        })
+        });
     }
 
     save(point, userId, callback) {
