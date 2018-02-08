@@ -1,6 +1,6 @@
-import {DaoConfig} from './dao-config'
+import {DaoConfig} from '../dao-config'
 import {InfluxDB} from "influx/lib/src/index";
-import {DaoRequest} from "./dao-request";
+import {DaoRequest} from "../dao-request";
 
 /**
  * DAO Class to save point in InfluxDB
@@ -89,11 +89,6 @@ export class PointDAO {
      * @param callback the callback which will get all the data
      */
     findBySeriesId(seriesId, callback) {
-        console.log(
-            DaoRequest.SELECT +
-            DaoRequest.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
-            DaoRequest.WHERE(DaoConfig.SERIES_ID, seriesId) +
-            DaoRequest.ORDER_BY + DaoRequest.ASC(DaoConfig.POINT_FIELD_TIME));
         this.influxdb.query(
             DaoRequest.SELECT +
             DaoRequest.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
