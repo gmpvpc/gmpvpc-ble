@@ -50,16 +50,16 @@ const socket = io(); // on ouvre une websocket pour recevoir les données du ser
  */
 socket.on('broadcast', function (data) {
     console.log(data);
-    var heading = data.heading.toFixed(1);
-    var pitch = data.pitch.toFixed(1);
-    var roll = data.roll.toFixed(1);
+    // var heading = data.heading.toFixed(1);
+    // var pitch = data.pitch.toFixed(1);
+    // var roll = data.roll.toFixed(1);
 
     // document.getElementById('console').innerText += JSON.stringify(data) + "\n";
 
     // console.log(heading, pitch, roll);
 
     // animate(0, 0, roll);
-    animate(pitch, heading, roll);
+    // animate(pitch, heading, roll);
 });
 
 

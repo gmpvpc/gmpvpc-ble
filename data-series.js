@@ -9,7 +9,7 @@ export class DataSeries{
     constructor(callback) {
         this.points = [];
         this.cursor = 0;
-        this.observer = callback;
+        // this.observer = callback;
     }
 
     addAccelero(x,y,z) {
