@@ -14,7 +14,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 
 document.getElementById('canvas').appendChild(renderer.domElement);
 
-var geometry = new THREE.BoxGeometry( 3, 1, 2 );
+var geometry = new THREE.BoxGeometry( 2, 2, 2 );
 var material = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh( geometry, material );
 
@@ -49,7 +49,22 @@ const socket = io(); // on ouvre une websocket pour recevoir les données du ser
  * pour mettre à jour la rotation du cube au fur et à mesure que les données arrivent
  */
 socket.on('broadcast', function (data) {
+    console.log(data);
+    var heading = data.heading.toFixed(1);
+    var pitch = data.pitch.toFixed(1);
+    var roll = data.roll.toFixed(1);
+
     // document.getElementById('console').innerText += JSON.stringify(data) + "\n";
-    console.log(data.heading.toFixed(2), data.pitch.toFixed(2), data.roll.toFixed(2));
-    animate(data.heading.toFixed(2), data.pitch.toFixed(2), data.roll.toFixed(2));
+
+    // console.log(heading, pitch, roll);
+
+    // animate(0, 0, roll);
+    animate(pitch, heading, roll);
 });
+
+
+var sendAction = function (action) {
+    socket.send({
+        action: action
+    });
+};
