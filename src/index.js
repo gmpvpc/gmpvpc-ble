@@ -1,4 +1,6 @@
-import { DataSeries } from './data-series';
+// import { DataSeries } from './data-series';
+import {PointDAO} from "./dao/point/point-dao";
+import {Point} from "./model/point";
 
 /**
  *
@@ -12,13 +14,13 @@ let app = express();
 let server = require('http').Server(app);
 let io = require('socket.io')(server);
 
-app.get('/', (request, response) => {
-    response.sendFile(__dirname + '/index.html');
-});
+//app.get('/', (request, response) => {
+//    response.sendFile(__dirname + '/front/index.html');
+//});
 
-app.use('/public', express.static('front'));
+//app.use('/public', express.static('dist/front/'));
 
-io.on('connection', (socket) => {
+/*io.on('connection', (socket) => {
     console.log("Client connected");
     socket.on('message', (data) => {
         switch (data.action) {
@@ -42,7 +44,7 @@ io.on('connection', (socket) => {
 
 server.listen(3000, () => {
     console.log("App is listening on the port 3000")
-});
+});*/
 
 /**
  *
@@ -117,7 +119,7 @@ const updateAHRS = () => {
 };
 
 // let dataSeries = new DataSeries(updateAHRS);
-let dataSeries = new DataSeries();
+//let dataSeries = new DataSeries();
 
 const addAcceleroToCalibrationArray = (x, y, z) => {
     // console.log(x,y,z);
@@ -126,15 +128,23 @@ const addAcceleroToCalibrationArray = (x, y, z) => {
     calibration_accZ.push(z);
 };
 
-const addAcceleroToDataSeries = (x, y, z) => {
+const sendAcceleroToInfluxDB = (x, y, z) => {
     x = Math.round((x - acc_bias_X) * 10) / 10;
     y = Math.round((y - acc_bias_Y) * 10) / 10;
     z = Math.round((z - acc_bias_Z) * 10) / 10;
     console.log("x:\t" + x + "\t\ty:\t" + y + "\t\tz:\t" + z);
+    const point = new Point();
+    point.gyro.fromXYZ(0,0,0);
+    point.magneto.fromXYZ(0,0,0);
+    point.accelero.fromXYZ(x,y,z);
+
+    const dao = new PointDAO();
+    dao.save(point, 666);
+
     // dataSeries.addAccelero(x, y, z);
-    setTimeout(() => {
-        io.sockets.emit('broadcast', {x: x, y: y, z: z}); // broadcast the vector to socket.io
-    },1);
+    // setTimeout(() => {
+    //     io.sockets.emit('broadcast', {x: x, y: y, z: z}); // broadcast the vector to socket.io
+    // },1);
 };
 
 const addGyroToCalibrationArray = (x, y, z) => {
@@ -157,14 +167,6 @@ const addMagToCalibrationArray = (x, y, z) => {
     calibration_magX.push(x);
     calibration_magY.push(y);
     calibration_magZ.push(z);
-};
-
-const addMagToDataSeries = (x, y, z) => {
-    dataSeries.addMagneto(
-        (x - mag_bias_X), // / mag_scaleX,
-        (y - mag_bias_Y), // / mag_scaleY,
-        (z - mag_bias_Z)  // / mag_scaleZ
-    );
 };
 
 const connect = () => {
@@ -198,19 +200,6 @@ const connect = () => {
             //     console.log('Enabling magnetometer...');
             //     sensorTag.enableMagnetometer(callback);
             // },
-            function (callback) {
-                sensorTag.notifySimpleKey(callback);
-            },
-            function (callback) {
-                sensorTag.on('simpleKeyChange', function (left, right) {
-                    if (right) {
-                        setTimeout(function(){
-                            calibrate(mySensor);
-                        }, 1);
-                    }
-                });
-                callback();
-            },
             // function(callback) {
             //     console.log('Setting gyroscope report period');
             //     sensorTag.setGyroscopePeriod(reportPeriod, function(error) {
@@ -228,33 +217,31 @@ const connect = () => {
             /**
              * ICI on ajoute les données à notre DataSet à mesure qu'on les recoit
              */
-            function(callback) {
-                sensorTag.on('accelerometerChange', addAcceleroToDataSeries);
+            // function(callback) {
+                // sensorTag.on('accelerometerChange', addAcceleroToDataSeries);
 
                 // sensorTag.on('gyroscopeChange', addGyroToDataSeries);
 
                 // sensorTag.on('magnetometerChange', addMagToDataSeries);
 
-                callback();
-            },
+                // callback();
+            // },
             /**
              * APRES AVOIR ACTIVÉ LES SENSORS IL FAUT DÉFINIR LA FRÉQUENCE DE COLLECTE DES DONNÉES
              * ET NOTIFIER LE SensorTag DE CETTE MODIFICATION, SANS QUOI IL NE FERA RIEN.
              * NB: il faut faire cela pour chaque sensor. A priori l'ordre de notification est le meme que
              * l'ordre de récupération des données
              */
-            function(callback) {
-                console.log('Setting accelerometer report period');
-                sensorTag.setAccelerometerPeriod(reportPeriod, function(error) {
-                    console.log('Notifying accelerometer');
-                    sensorTag.notifyAccelerometer((error) => {
-                        console.log(error);
-                        callback();
-                    });
-                });
-            },
             function (callback) {
-                // setTimeout(callback, 30000);
+                calibrate(sensorTag, callback);
+            },
+            function(callback) {
+                console.log("Starting data gathering...");
+                setInterval(() => {
+                    sensorTag.readAccelerometer(function(error, x, y, z) {
+                        sendAcceleroToInfluxDB(x,y,z);
+                    });
+                }, 50);
             },
             function() {
                 disconnect();
@@ -264,7 +251,7 @@ const connect = () => {
     });
 };
 
-const calibrate = (sensorTag) => {
+const calibrate = (sensorTag, extCallback) => {
     calibration_accX = [];
     calibration_accY = [];
     calibration_accZ = [];
@@ -278,31 +265,30 @@ const calibrate = (sensorTag) => {
     calibration_magZ = [];
 
     async.series([
-        function(callback) {
-            sensorTag.on('accelerometerChange', addAcceleroToCalibrationArray);
-
-            sensorTag.on('gyroscopeChange', addGyroToCalibrationArray);
-
-            sensorTag.on('magnetometerChange', addMagToCalibrationArray);
-            callback();
-        },
-        function(callback) {
+        callback => {
             console.log("Merci de poser le capteur sur une surface plane");
+            const truc = setInterval(() => {
+                sensorTag.readAccelerometer(function(error, x, y, z) {
+                    addAcceleroToCalibrationArray(x,y,z);
+                });
+            }, 100);
+
             console.log("On récolte 15s de données pour la calibration...");
-            setTimeout(function(){
+            setTimeout(() => {
+                clearInterval(truc);
                 callback();
             }, 15000);
         },
-        function(callback) {
-            sensorTag.removeListener('accelerometerChange', addAcceleroToCalibrationArray);
+        callback => {
+            // sensorTag.removeListener('accelerometerChange', addAcceleroToCalibrationArray);
 
             // sensorTag.removeListener('gyroscopeChange', addGyroToCalibrationArray);
 
             // sensorTag.removeListener('magnetometerChange', addMagToCalibrationArray);
 
-            acc_bias_X = calibration_accX.reduce((a, b) => { return a + b; }) / calibration_accX.length; // compute average for accelerometer X axis
-            acc_bias_Y = calibration_accY.reduce((a, b) => { return a + b; }) / calibration_accY.length; // compute average for accelerometer X axis
-            acc_bias_Z = calibration_accZ.reduce((a, b) => { return a + b; }) / calibration_accZ.length; // compute average for accelerometer X axis
+            acc_bias_X = calibration_accX.reduce((a, b) => { return a + b; }, 0) / calibration_accX.length; // compute average for accelerometer X axis
+            acc_bias_Y = calibration_accY.reduce((a, b) => { return a + b; }, 0) / calibration_accY.length; // compute average for accelerometer X axis
+            acc_bias_Z = calibration_accZ.reduce((a, b) => { return a + b; }, 0) / calibration_accZ.length; // compute average for accelerometer X axis
 
             // gyro_bias_X = calibration_gyroX.reduce((a, b) => { return a + b; }) / calibration_gyroX.length; // compute average for gyroscope X axis
             // gyro_bias_Y = calibration_gyroY.reduce((a, b) => { return a + b; }) / calibration_gyroY.length; // compute average for gyroscope Y axis
@@ -317,13 +303,14 @@ const calibrate = (sensorTag) => {
             // console.log("gyro bias X: " + gyro_bias_X + ", Y: " + gyro_bias_Y + ", Z: " + gyro_bias_Z);
             // console.log("magneto bias X: " + mag_bias_X + ", Y: " + mag_bias_Y + ", Z: " + mag_bias_Z);
 
-            madgwick = new AHRS({
-                sampleInterval: 2, // Hz
-                algorithm: 'Madgwick',
-                beta: 0.1,
-                kp: 0.5,
-                ki: 0
-            });
+            // madgwick = new AHRS({
+            //     sampleInterval: 2, // Hz
+            //     algorithm: 'Madgwick',
+            //     beta: 0.1,
+            //     kp: 0.5,
+            //     ki: 0
+            // });
+            extCallback();
             callback();
         }
     ]);
@@ -364,3 +351,5 @@ const disconnect = (sensorTag) => {
         }
     ]);
 };
+
+connect();
