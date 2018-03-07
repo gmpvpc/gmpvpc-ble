@@ -6,6 +6,9 @@
     <script src="/ply/plotly.min.js"></script>
     <script src="/io/socket.io.js"></script>
     <style>
+        html, body, #plot{
+            height: 100%
+        }
         pre{
             background-color: #363636;
             border: 5px solid #a8a8a8;
@@ -23,12 +26,10 @@
 <!-- <button onclick="sendAction('calibrate')">Calibrate</button> -->
 <!-- <button onclick="sendAction('connect')">Connect</button> -->
 
-<div id="plot">
-
-</div>
+<div id="plot"></div>
 
 <!--<div id="canvas"></div>-->
 <!-- <pre id="console"></pre> -->
-<script src="/public/main.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>
