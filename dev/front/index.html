@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>HERE COMES THE PUNCH</title>
-    <script src="/public/three.min.js"></script>
-    <script src="/public/socket.io.js"></script>
+    <title>Display glove Web-UI</title>
+    <script src="/ply/plotly.min.js"></script>
+    <script src="/io/socket.io.js"></script>
     <style>
         pre{
             background-color: #363636;
@@ -20,15 +20,15 @@
     </style>
 </head>
 <body>
-<button onclick="sendAction('calibrate')">Calibrate</button>
-<button onclick="sendAction('connect')">Connect</button>
+<!-- <button onclick="sendAction('calibrate')">Calibrate</button> -->
+<!-- <button onclick="sendAction('connect')">Connect</button> -->
 
 <div id="plot">
 
 </div>
 
 <!--<div id="canvas"></div>-->
-<pre id="console"></pre>
-<script src="/public/drawCube.js"></script>
+<!-- <pre id="console"></pre> -->
+<script src="/public/main.js"></script>
 </body>
 </html>
