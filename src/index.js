@@ -9,43 +9,6 @@ import {Point} from "./model/point";
  */
 let mySensor = null;
 
-const express = require('express');
-let app = express();
-let server = require('http').Server(app);
-let io = require('socket.io')(server);
-
-//app.get('/', (request, response) => {
-//    response.sendFile(__dirname + '/front/index.html');
-//});
-
-//app.use('/public', express.static('dist/front/'));
-
-/*io.on('connection', (socket) => {
-    console.log("Client connected");
-    socket.on('message', (data) => {
-        switch (data.action) {
-            case "calibrate":
-                console.log("Calibration requested !");
-                setTimeout(function(){
-                    calibrate(mySensor);
-                }, 1);
-                break;
-            case "connect":
-                setTimeout(function () {
-                    connect();
-                },1);
-                break;
-            default:
-                console.log("unknown action '" + data.action + "' requested");
-                break;
-        }
-    });
-});
-
-server.listen(3000, () => {
-    console.log("App is listening on the port 3000")
-});*/
-
 /**
  *
  * SENSOR TAG I/O
@@ -86,6 +49,9 @@ let calibration_accX = [];
 let calibration_accY = [];
 let calibration_accZ= [];
 
+
+let avg_acc_Y = [];
+
 let gyro_bias_X = 0;
 let gyro_bias_Y = 0;
 let gyro_bias_Z = 0;
@@ -102,24 +68,40 @@ let calibration_magX = [];
 let calibration_magY = [];
 let calibration_magZ = [];
 
-/**
- * Cette fonction update la librairie AHRS et envoie un event a socket-IO pour trasmettre la donnee
- * Attitude and Heading Reference System
- */
-const updateAHRS = () => {
-    const p = dataSeries.getCurrentPoint();
+let normesCarre_tab = [];
 
-    // madgwick.update(p.gyro.x, p.gyro.y, p.gyro.z, p.accelero.x, p.accelero.y, p.accelero.z, p.magneto.x, p.magneto.y, p.magneto.z);
-    madgwick.update(p.gyro.x, p.gyro.y, p.gyro.z, p.accelero.x, p.accelero.y, p.accelero.z);
+const dao = new PointDAO();
 
-    // console.log(madgwick.toVector());
-    setTimeout(() => {
-        io.sockets.emit('broadcast', madgwick.getEulerAngles()); // broadcast the vector to socket.io
-    },1);
+
+let hitStart = false;
+const hitDetection = (ax, ay, az) => {
+    let normeAuCarre = Math.pow(ax,2) + Math.pow(ay, 2) + Math.pow(az, 2);
+
+    if(normeAuCarre > 1 && !hitStart) {
+        console.log("HIT START");
+        hitStart = true;
+        // we've got a hit start
+
+        // enabled accurate mode
+
+        // detect end of hit with avg going down
+    }
+
+    if (normesCarre_tab.length == 11) {
+        normesCarre_tab.shift();
+    }
+    normesCarre_tab.push(normeAuCarre);
+
+    let avg = normesCarre_tab.reduce((pv, cv) => { return pv + cv; }, 0) / normesCarre_tab.length;
+
+    if (hitStart && avg < 1){
+        console.log("END\n");
+
+        hitStart = false;
+    }
+
+    return avg;
 };
-
-// let dataSeries = new DataSeries(updateAHRS);
-//let dataSeries = new DataSeries();
 
 const addAcceleroToCalibrationArray = (x, y, z) => {
     // console.log(x,y,z);
@@ -136,15 +118,12 @@ const sendAcceleroToInfluxDB = (x, y, z) => {
     const point = new Point();
     point.gyro.fromXYZ(0,0,0);
     point.magneto.fromXYZ(0,0,0);
-    point.accelero.fromXYZ(x,y,z);
+    point.accelero.fromXYZ(x, y, z);
+    
+    hitDetection(x, y, z);
 
-    const dao = new PointDAO();
-    dao.save(point, 666);
 
-    // dataSeries.addAccelero(x, y, z);
-    // setTimeout(() => {
-    //     io.sockets.emit('broadcast', {x: x, y: y, z: z}); // broadcast the vector to socket.io
-    // },1);
+    dao.save(point, 777);
 };
 
 const addGyroToCalibrationArray = (x, y, z) => {
@@ -192,13 +171,12 @@ const connect = () => {
                 console.log('Enabling accelerometer...');
                 sensorTag.enableAccelerometer(callback);
             },
+            // function (callback) {
+            //     calibrate(sensorTag, callback);
+            // },
             // function(callback) {
             //     console.log('Enabling gyroscope...');
             //     sensorTag.enableGyroscope(callback);
-            // },
-            // function(callback) {
-            //     console.log('Enabling magnetometer...');
-            //     sensorTag.enableMagnetometer(callback);
             // },
             // function(callback) {
             //     console.log('Setting gyroscope report period');
@@ -207,41 +185,27 @@ const connect = () => {
             //         sensorTag.notifyGyroscope(callback);
             //     });
             // },
-            // function(callback) {
-            //     console.log('Setting magnetometer report period');
-            //     sensorTag.setMagnetometerPeriod(reportPeriod, function(error) {
-            //         console.log('Notifying magnetometer');
-            //         sensorTag.notifyMagnetometer(callback);
-            //     });
-            // },
+            function(callback) {
+                console.log('Setting acceleroMeter report period');
+                sensorTag.setAccelerometerPeriod(reportPeriod, function(error) {
+                    console.log('Notifying accelerometer');
+                    sensorTag.notifyAccelerometer(callback);
+                });
+            },
             /**
              * ICI on ajoute les données à notre DataSet à mesure qu'on les recoit
              */
-            // function(callback) {
-                // sensorTag.on('accelerometerChange', addAcceleroToDataSeries);
+            function(callback) {
+                sensorTag.on('accelerometerChange', sendAcceleroToInfluxDB);
 
                 // sensorTag.on('gyroscopeChange', addGyroToDataSeries);
 
                 // sensorTag.on('magnetometerChange', addMagToDataSeries);
 
-                // callback();
-            // },
-            /**
-             * APRES AVOIR ACTIVÉ LES SENSORS IL FAUT DÉFINIR LA FRÉQUENCE DE COLLECTE DES DONNÉES
-             * ET NOTIFIER LE SensorTag DE CETTE MODIFICATION, SANS QUOI IL NE FERA RIEN.
-             * NB: il faut faire cela pour chaque sensor. A priori l'ordre de notification est le meme que
-             * l'ordre de récupération des données
-             */
-            function (callback) {
-                calibrate(sensorTag, callback);
+                callback();
             },
-            function(callback) {
-                console.log("Starting data gathering...");
-                setInterval(() => {
-                    sensorTag.readAccelerometer(function(error, x, y, z) {
-                        sendAcceleroToInfluxDB(x,y,z);
-                    });
-                }, 50);
+            () => {
+                // ici on ne fait rien, on attend bien sagement que l'utilisateur fasse un CTRL+C
             },
             function() {
                 disconnect();
@@ -271,7 +235,7 @@ const calibrate = (sensorTag, extCallback) => {
                 sensorTag.readAccelerometer(function(error, x, y, z) {
                     addAcceleroToCalibrationArray(x,y,z);
                 });
-            }, 100);
+            }, 200);
 
             console.log("On récolte 15s de données pour la calibration...");
             setTimeout(() => {
