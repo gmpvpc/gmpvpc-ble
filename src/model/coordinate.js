@@ -1,7 +1,7 @@
 /**
  * Cette classe représente une coordonnée tridimensionnelle
  */
-export class Coordinate {
+export default class Coordinate {
     constructor(){
         this.x = 0;
         this.y = 0;

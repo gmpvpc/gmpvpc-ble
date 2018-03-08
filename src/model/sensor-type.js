@@ -1,3 +1,6 @@
+/**
+ * Type of Sensor used
+ */
 export default class SensorType {
 
 }

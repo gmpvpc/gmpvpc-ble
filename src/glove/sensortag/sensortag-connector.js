@@ -1,9 +1,12 @@
 import SensorTag from 'sensortag/lib/sensortag';
-import SensorType from '../model/sensor-type';
-import {Coordinate} from "../../model/coordinate";
-import {Point} from "../../model/point";
+import SensorType from '../../model/sensor-type';
+import Coordinate from "../../model/coordinate";
+import Point from "../../model/point";
 import SensorTagCalibration from "./sensortag-calibration";
 
+/**
+ * Connect a new Sensor Tag
+ */
 export default class SensorTagConnector {
     constructor(gloveUuid, callback) {
         this.sensorTag = null;
@@ -20,7 +23,7 @@ export default class SensorTagConnector {
         console.log("Try to discover: " + this.gloveUuid);
         SensorTag.discoverById(this.gloveUuid, (sensorTag) => {
             this.sensorTag = sensorTag;
-            this.sensorTagCalibration = new SensorTagCalibration(sensorTag, this);
+            this.sensorTagCalibration = new SensorTagCalibration(sensorTag, (zero) => this.calibration(zero));
             console.log("Discovered: " + this.gloveUuid);
             this.initSensorTag();
         });
@@ -75,7 +78,6 @@ export default class SensorTagConnector {
             this.sensorTag.setMagnetometerPeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
                 this.logError(err);
                 console.log("MagnetometerPeriod set.");
-                (() => this.sensorTagCalibration.calibrateMagnetometer())();
             });
         });
     };

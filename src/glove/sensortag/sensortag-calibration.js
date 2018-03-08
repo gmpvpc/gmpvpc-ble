@@ -1,20 +1,23 @@
 import SensorTagConnector from "./sensortag-connector";
-import {Coordinate} from "../../model/coordinate";
-import {Point} from "../../model/point";
+import Coordinate from "../../model/coordinate";
+import Point from "../../model/point";
 
+/**
+ * Calibration of a SensorTag
+ */
 export default class SensorTagCalibration {
 
     constructor(sensorTag, callback) {
         this.callback = callback;
         this.sensorTag = sensorTag;
         this.zero = new Point();
+        this.zero.magnetometer = new Coordinate();
         this.accelerometerCoordinates = new Set();
         this.gyroscopeCoordinates = new Set();
-        this.magnetometerCoordinates = new Set();
     }
 
     get isCalibrated() {
-        return this.zero.accelerometer !== null && this.zero.gyroscope !== null && this.zero.magnetometer !== null;
+        return this.zero.accelerometer !== null && this.zero.gyroscope !== null;
     }
 
     calibrateAccelerometer() {
@@ -51,24 +54,6 @@ export default class SensorTagCalibration {
         let interval = setInterval(() => this.sensorTag.readGyroscope((err, x, y, z) => calibratePoints(x, y, z)), SensorTagConnector.DEFAULT_PERIOD);
     }
 
-    calibrateMagnetometer() {
-        console.log("Calibrate Magnetometer...");
-        let calibratePoints = (x, y, z) => {
-            if (x === 0 && y === 0 && z === 0) {
-                return;
-            }
-            console.log("Magnetometer calibration point(" + this.magnetometerCoordinates.size + "):" + "\t" + x + "\t" + y + "\t" + z);
-            this.magnetometerCoordinates.add(new Coordinate().fromXYZ(x, y, z));
-            if (this.magnetometerCoordinates.size >= SensorTagConnector.CALIBRATION_POINTS) {
-                clearInterval(interval);
-                this.zero.magnetometer = this.calibrate(this.magnetometerCoordinates);
-                console.log("Magnetometer Calibrated.");
-                this.finishCalibration();
-            }
-        };
-        let interval = setInterval(() => this.sensorTag.readMagnetometer((err, x, y, z) => calibratePoints(x, y, z)), SensorTagConnector.DEFAULT_PERIOD);
-    }
-
     calibrate(coordinates) {
         let coordinate = new Coordinate();
         coordinates.forEach((item) => {
@@ -86,9 +71,6 @@ export default class SensorTagCalibration {
         if (!this.isCalibrated) {
             return;
         }
-        (() => {
-            this.callback.zero = this.zero;
-            this.callback.startDataRetrieval();
-        })();
+        this.callback(this.zero);
     }
 }
