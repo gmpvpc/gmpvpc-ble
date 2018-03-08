@@ -9,20 +9,21 @@ const socket = io(); // on ouvre une websocket pour recevoir les données du ser
  */
 socket.on('broadcast', function (data) {
     console.log(data);
+    animatePlot(data.x, data.y, data.z);
 });
 
 
-var sendAction = function (action) {
+const sendAction = action => {
     socket.send({
         action: action
     });
 };
 
 
-var trace1 = {
-    x: [0, 1, 3, 5, 7, 8],
-    y: [1, 2, 3, 4, 5, 6],
-    z: [0, 0, 1, 1, 2, 2],
+let trace1 = {
+    x: [0],
+    y: [0],
+    z: [0],
 	mode: 'line',
 	marker: {
 		size: 5,
@@ -32,10 +33,10 @@ var trace1 = {
         },
         opacity: 1
     },
-	type: 'scatter3d'
+    type: 'scatter3d'
 };
 
-var layout = {
+let layout = {
     margin: {
         l: 0,
         r: 0,
@@ -44,6 +45,25 @@ var layout = {
     }
 };
 
-var data = [trace1];
+let data = [trace1];
+let position = {x: 8, y: 6, z: 2};
 
 Plotly.newPlot('plot', data, layout);
+
+let animatePlot = (x, y, z) => {
+    x += trace1.x[trace1.x.length - 1];
+    y += trace1.y[trace1.y.length - 1];
+    z += trace1.z[trace1.z.length - 1];
+    
+    Plotly.extendTraces('plot', {
+        x: [
+            [x]
+        ],
+        y: [
+            [y]
+        ],
+        z: [
+            [z]
+        ]
+    }, [0]);
+};
