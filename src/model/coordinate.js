@@ -8,6 +8,13 @@ export class Coordinate {
         this.z = null;
     }
 
+    calibrate(zero) {
+        this.x -= zero.x;
+        this.y -= zero.y;
+        this.z -= zero.z;
+        return this;
+    }
+
     isEmpty() {
         return this.x === null;
     }
@@ -16,5 +23,6 @@ export class Coordinate {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
     }
 }
