@@ -3,9 +3,9 @@
  */
 export class Coordinate {
     constructor(){
-        this.x = null;
-        this.y = null;
-        this.z = null;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
 
     calibrate(zero) {
@@ -13,10 +13,6 @@ export class Coordinate {
         this.y -= zero.y;
         this.z -= zero.z;
         return this;
-    }
-
-    isEmpty() {
-        return this.x === null;
     }
 
     fromXYZ(x,y,z) {

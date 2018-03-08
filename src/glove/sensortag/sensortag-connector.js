@@ -20,7 +20,7 @@ export default class SensorTagConnector {
         console.log("Try to discover: " + this.gloveUuid);
         SensorTag.discoverById(this.gloveUuid, (sensorTag) => {
             this.sensorTag = sensorTag;
-            this.sensorTagCalibration = new SensorTagCalibration(sensorTag, this.calibration);
+            this.sensorTagCalibration = new SensorTagCalibration(sensorTag, this);
             console.log("Discovered: " + this.gloveUuid);
             this.initSensorTag();
         });
@@ -50,7 +50,7 @@ export default class SensorTagConnector {
             this.logError(err);
             this.sensorTag.setAccelerometerPeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
                 this.logError(err);
-                this.sensorTagCalibration.calibrateAccelerometer();
+                (() => this.sensorTagCalibration.calibrateAccelerometer())();
             });
         });
     };
@@ -61,7 +61,7 @@ export default class SensorTagConnector {
             this.logError(err);
             this.sensorTag.setGyroscopePeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
                 this.logError(err);
-                this.sensorTagCalibration.calibrateGyroscope();
+                (() => this.sensorTagCalibration.calibrateGyroscope())();
             });
         });
     };
@@ -75,21 +75,21 @@ export default class SensorTagConnector {
             this.sensorTag.setMagnetometerPeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
                 this.logError(err);
                 console.log("MagnetometerPeriod set.");
-                this.sensorTagCalibration.calibrateMagnetometer();
+                (() => this.sensorTagCalibration.calibrateMagnetometer())();
             });
         });
     };
-
-    calibration(zero) {
-        this.zero = zero;
-        this.startDataRetrieval();
-    }
 
     startDataRetrieval() {
         this.sensorTag.notifyMPU9250((err) => this.logError(err));
         this.sensorTag.on('accelerometerChange', (x, y , z) => this.addCoordinateToCurrentPoint(SensorType.ACCELEROMETER, new Coordinate().fromXYZ(x, y , z)));
         this.sensorTag.on('gyroscopeChange', (x, y , z) => this.addCoordinateToCurrentPoint(SensorType.GYROSCOPE, new Coordinate().fromXYZ(x, y , z)));
         this.sensorTag.on('magnetometerChange', (x, y , z) => this.addCoordinateToCurrentPoint(SensorType.MAGETOMETER, new Coordinate().fromXYZ(x, y , z)));
+    };
+
+    calibration(zero) {
+        this.zero = zero;
+        this.startDataRetrieval();
     };
 
     addCoordinateToCurrentPoint(sensorType, coordinate) {

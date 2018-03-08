@@ -10,12 +10,13 @@ export class Point {
     }
 
     isValid() {
-        return this.accelerometer !== null || this.gyroscope !== null || this.magnetometer !== null;
+        return this.accelerometer !== null && this.gyroscope !== null && this.magnetometer !== null;
     }
 
     calibrate(zero) {
         this.accelerometer.calibrate(zero.accelerometer);
         this.gyroscope.calibrate(zero.gyroscope);
         this.magnetometer.calibrate(zero.magnetometer);
+        return this;
     }
 }

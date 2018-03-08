@@ -23,7 +23,7 @@ export default class SensorTagCalibration {
             if (x === 0 && y === 0 && z === 0) {
                 return;
             }
-            this.accelerometerCoordinates.add(new Coordinate(x, y, z));
+            this.accelerometerCoordinates.add(new Coordinate().fromXYZ(x, y, z));
             if (this.accelerometerCoordinates.size >= SensorTagConnector.CALIBRATION_POINTS) {
                 clearInterval(interval);
                 this.zero.accelerometer = this.calibrate(this.accelerometerCoordinates);
@@ -40,7 +40,7 @@ export default class SensorTagCalibration {
             if (x === 0 && y === 0 && z === 0) {
                 return;
             }
-            this.gyroscopeCoordinates.add(new Coordinate(x, y, z));
+            this.gyroscopeCoordinates.add(new Coordinate().fromXYZ(x, y, z));
             if (this.gyroscopeCoordinates.size >= SensorTagConnector.CALIBRATION_POINTS) {
                 clearInterval(interval);
                 this.zero.gyroscope = this.calibrate(this.gyroscopeCoordinates);
@@ -58,7 +58,7 @@ export default class SensorTagCalibration {
                 return;
             }
             console.log("Magnetometer calibration point(" + this.magnetometerCoordinates.size + "):" + "\t" + x + "\t" + y + "\t" + z);
-            this.magnetometerCoordinates.add(new Coordinate(x, y, z));
+            this.magnetometerCoordinates.add(new Coordinate().fromXYZ(x, y, z));
             if (this.magnetometerCoordinates.size >= SensorTagConnector.CALIBRATION_POINTS) {
                 clearInterval(interval);
                 this.zero.magnetometer = this.calibrate(this.magnetometerCoordinates);
@@ -76,9 +76,9 @@ export default class SensorTagCalibration {
             coordinate.y += item.y;
             coordinate.z += item.z;
         });
-        coordinate.x /= coordinates.length;
-        coordinate.y /= coordinates.length;
-        coordinate.z /= coordinates.length;
+        coordinate.x /= coordinates.size;
+        coordinate.y /= coordinates.size;
+        coordinate.z /= coordinates.size;
         return coordinate;
     }
 
@@ -86,6 +86,9 @@ export default class SensorTagCalibration {
         if (!this.isCalibrated) {
             return;
         }
-        this.callback(this.zero);
+        (() => {
+            this.callback.zero = this.zero;
+            this.callback.startDataRetrieval();
+        })();
     }
 }
