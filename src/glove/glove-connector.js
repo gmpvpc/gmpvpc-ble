@@ -6,7 +6,7 @@ import GloveDataProcessing from "./ahrs/glove-data-processing";
  */
 export default class GloveConnector {
     constructor(gloveUuid, callback) {
-        this.gloveDataProcessing = new GloveDataProcessing();
+        this.gloveDataProcessing = new GloveDataProcessing(1000 / SensorTagConnector.DEFAULT_PERIOD);
         this.sensorTagConnector = new SensorTagConnector(gloveUuid, (point) => this.dataRetrieval(point));
         this.callback = callback;
     }

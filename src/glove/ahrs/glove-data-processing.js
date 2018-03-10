@@ -1,13 +1,19 @@
 import AHRS from 'ahrs/index';
 import Movement from "../../model/movement";
+import MathExt from "../../utils/math-extension.js"
 
 /**
  * Calculation of the movement attitude
  */
 export default class GloveDataProcessing {
-    constructor() {
+
+    /**
+     * Constructor
+     * @param frequency the frequency used in hertz
+     */
+    constructor(frequency) {
         this.ahrs = new AHRS({
-            sampleInterval: 20,
+            sampleInterval: frequency,
             algorithm: 'Madgwick',
             beta: 0.4,
             kp: 0.5,
@@ -16,7 +22,17 @@ export default class GloveDataProcessing {
     };
 
     process(point) {
-        this.ahrs.update(point.gyroscope.x, point.gyroscope.y, point.gyroscope.z, point.accelerometer.x, point.accelerometer.y, point.accelerometer.z, point.magnetometer.x, point.magnetometer.y, point.magnetometer.z);
+        this.ahrs.update(
+            MathExt.toRadian(point.gyroscope.x),
+            MathExt.toRadian(point.gyroscope.y),
+            MathExt.toRadian(point.gyroscope.z),
+            point.accelerometer.x,
+            point.accelerometer.y,
+            point.accelerometer.z,
+            point.magnetometer.x,
+            point.magnetometer.y,
+            point.magnetometer.z
+        );
         return new Movement(this.ahrs.toVector(), this.ahrs.getQuaternion());
     };
 }
