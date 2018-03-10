@@ -4,6 +4,6 @@
 export default class SensorType {
 
 }
-SensorType.ACCELEROMETER = "accelerometer";
-SensorType.GYROSCOPE = "gyroscope";
-SensorType.MAGETOMETER = "magnetometer";
+SensorType.ACCELEROMETER = "Accelerometer";
+SensorType.GYROSCOPE = "Gyroscope";
+SensorType.MAGETOMETER = "Magnetometer";

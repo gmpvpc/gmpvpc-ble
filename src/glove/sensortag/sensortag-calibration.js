@@ -1,6 +1,7 @@
 import SensorTagConnector from "./sensortag-connector";
 import Coordinate from "../../model/coordinate";
 import Point from "../../model/point";
+import SensorType from "../../model/sensor-type";
 
 /**
  * Calibration of a SensorTag
@@ -20,41 +21,38 @@ export default class SensorTagCalibration {
         return this.zero.accelerometer !== null && this.zero.gyroscope !== null;
     }
 
-    calibrateAccelerometer() {
-        console.log("Calibrate Accelerometer...");
-        let calibratePoints = (x, y, z) => {
+    calibrate(sensorType, readCallback) {
+        console.log("Calibrate " + sensorType + "...");
+        let calibratePoints = (err, x, y, z) => {
             if (x === 0 && y === 0 && z === 0) {
                 return;
             }
-            this.accelerometerCoordinates.add(new Coordinate().fromXYZ(x, y, z));
-            if (this.accelerometerCoordinates.size >= SensorTagConnector.CALIBRATION_POINTS) {
+            this.coordinates(sensorType).add(new Coordinate().fromXYZ(x, y, z));
+            if (this.coordinates(sensorType).size >= SensorTagConnector.CALIBRATION_POINTS) {
                 clearInterval(interval);
-                this.zero.accelerometer = this.calibrate(this.accelerometerCoordinates);
-                console.log("Accelerometer Calibrated.");
+                this.zero.set(sensorType, this.calcAvg(this.coordinates(sensorType)));
+                console.log(sensorType + " Calibrated.");
                 this.finishCalibration();
             }
         };
-        let interval = setInterval(() => this.sensorTag.readAccelerometer((err, x, y, z) => calibratePoints(x, y, z)), SensorTagConnector.DEFAULT_PERIOD);
+        let interval = setInterval(() => readCallback(calibratePoints), SensorTagConnector.DEFAULT_PERIOD);
     }
 
-    calibrateGyroscope() {
-        console.log("Calibrate Gyroscope...");
-        let calibratePoints = (x, y, z) => {
-            if (x === 0 && y === 0 && z === 0) {
-                return;
+    coordinates(sensorType) {
+        switch (sensorType) {
+            case SensorType.ACCELEROMETER: {
+                return this.accelerometerCoordinates;
             }
-            this.gyroscopeCoordinates.add(new Coordinate().fromXYZ(x, y, z));
-            if (this.gyroscopeCoordinates.size >= SensorTagConnector.CALIBRATION_POINTS) {
-                clearInterval(interval);
-                this.zero.gyroscope = this.calibrate(this.gyroscopeCoordinates);
-                console.log("Gyroscope Calibrated");
-                this.finishCalibration();
+            case SensorType.GYROSCOPE: {
+                return this.gyroscopeCoordinates;
             }
-        };
-        let interval = setInterval(() => this.sensorTag.readGyroscope((err, x, y, z) => calibratePoints(x, y, z)), SensorTagConnector.DEFAULT_PERIOD);
+            default: {
+                return null;
+            }
+        }
     }
 
-    calibrate(coordinates) {
+    calcAvg(coordinates) {
         let coordinate = new Coordinate();
         coordinates.forEach((item) => {
             coordinate.x += item.x;

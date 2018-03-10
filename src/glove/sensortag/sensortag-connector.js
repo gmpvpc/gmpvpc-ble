@@ -10,12 +10,12 @@ import SensorTagCalibration from "./sensortag-calibration";
 export default class SensorTagConnector {
     constructor(gloveUuid, callback) {
         this.sensorTag = null;
-        this.gloveUuid = gloveUuid;
         this.zero = null;
+        this.sensorTagCalibration = null;
+        this.gloveUuid = gloveUuid;
         this.currentPoint = new Point();
         this.currentPointTimeStamp = Date.now();
         this.callback = callback;
-        this.sensorTagCalibration = null;
         this.connect();
     }
 
@@ -23,106 +23,74 @@ export default class SensorTagConnector {
         console.log("Try to discover: " + this.gloveUuid);
         SensorTag.discoverById(this.gloveUuid, (sensorTag) => {
             this.sensorTag = sensorTag;
-            this.sensorTagCalibration = new SensorTagCalibration(sensorTag, (zero) => this.calibration(zero));
-            console.log("Discovered: " + this.gloveUuid);
             this.initSensorTag();
+            console.log("Discovered: " + this.gloveUuid);
         });
-    };
+    }
 
     disconnect() {
         this.sensorTag.disconnect(() => console.log("SensorTag try to disconnect!"));
         this.sensorTag = null;
         this.sensorTagCalibration = null;
-    };
+    }
 
     initSensorTag() {
-        console.log("InitSensorTag: " + this.gloveUuid);
+        console.log("Initialize SensorTag: " + this.gloveUuid);
+        this.sensorTagCalibration = new SensorTagCalibration(this.sensorTag, (zero) => this.calibration(zero));
         this.sensorTag.once('disconnect', () => console.log("SensorTag disconnected."));
         this.sensorTag.connectAndSetUp((err) => {
-            this.logError(err);
+            SensorTagConnector.logError(err);
             console.log("SensorTag connected: " + this.sensorTag.uuid);
-            this.enableAccelerometer();
-            this.enableGyroscope();
-            this.enableMagnetometer();
+            this.enableSensors();
         });
-    };
+    }
 
-    enableAccelerometer() {
-        console.log("Enable Accelerometer ...");
-        this.sensorTag.enableAccelerometer((err) => {
-            this.logError(err);
-            this.sensorTag.setAccelerometerPeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
-                this.logError(err);
-                (() => this.sensorTagCalibration.calibrateAccelerometer())();
+    enableSensors() {
+        console.log("Enable MPU9250 ...");
+        ((callback) => this.sensorTag.enableMPU9250(0x0007 | 0x0238 | 0x0040, callback))((err) => {
+            SensorTagConnector.logError(err);
+            console.log("MPU9250 enabled.");
+            console.log("MPU9250 set period ...");
+            ((callback) => this.sensorTag.setMPU9250Period(SensorTagConnector.DEFAULT_PERIOD, callback))((err) => {
+                SensorTagConnector.logError(err);
+                console.log("MPU9250 set period done.");
+                this.sensorTagCalibration.calibrate(SensorType.ACCELEROMETER, (callback) => this.sensorTag.readAccelerometer(callback));
+                this.sensorTagCalibration.calibrate(SensorType.GYROSCOPE, (callback) => this.sensorTag.readGyroscope(callback));
             });
         });
-    };
-
-    enableGyroscope() {
-        console.log("Enable Gyroscope ...");
-        this.sensorTag.enableGyroscope((err) => {
-            this.logError(err);
-            this.sensorTag.setGyroscopePeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
-                this.logError(err);
-                (() => this.sensorTagCalibration.calibrateGyroscope())();
-            });
-        });
-    };
-
-    enableMagnetometer() {
-        console.log("Enable Magnetometer ...");
-        this.sensorTag.enableMagnetometer((err) => {
-            this.logError(err);
-            console.log("Magnetometer enabled.");
-            console.log("SetMagnetometerPeriod ...");
-            this.sensorTag.setMagnetometerPeriod(SensorTagConnector.DEFAULT_PERIOD, (err) => {
-                this.logError(err);
-                console.log("MagnetometerPeriod set.");
-            });
-        });
-    };
+    }
 
     startDataRetrieval() {
-        this.sensorTag.notifyMPU9250((err) => this.logError(err));
-        this.sensorTag.on('accelerometerChange', (x, y , z) => this.addCoordinateToCurrentPoint(SensorType.ACCELEROMETER, new Coordinate().fromXYZ(x, y , z)));
-        this.sensorTag.on('gyroscopeChange', (x, y , z) => this.addCoordinateToCurrentPoint(SensorType.GYROSCOPE, new Coordinate().fromXYZ(x, y , z)));
-        this.sensorTag.on('magnetometerChange', (x, y , z) => this.addCoordinateToCurrentPoint(SensorType.MAGETOMETER, new Coordinate().fromXYZ(x, y , z)));
-    };
+        console.log("Enable data retrieval ...");
+        this.sensorTag.notifyMPU9250((err) => SensorTagConnector.logError(err));
+        this.sensorTag.on('accelerometerChange', (x, y, z) => this.addCoordinateToCurrentPoint(SensorType.ACCELEROMETER, new Coordinate().fromXYZ(x, y, z)));
+        this.sensorTag.on('gyroscopeChange', (x, y, z) => this.addCoordinateToCurrentPoint(SensorType.GYROSCOPE, new Coordinate().fromXYZ(x, y, z)));
+        this.sensorTag.on('magnetometerChange', (x, y, z) => this.addCoordinateToCurrentPoint(SensorType.MAGETOMETER, new Coordinate().fromXYZ(x, y, z)));
+        console.log("Data retrieval enabled");
+    }
 
     calibration(zero) {
+        console.log("Calibration ended: " + JSON.stringify(zero));
         this.zero = zero;
         this.startDataRetrieval();
-    };
+    }
 
     addCoordinateToCurrentPoint(sensorType, coordinate) {
         if (this.currentPointTimeStamp - Date.now() > SensorTagConnector.DEFAULT_PERIOD || this.currentPoint.isValid()) {
             this.currentPoint = new Point();
             this.currentPointTimeStamp = Date.now();
         }
-        switch (sensorType) {
-            case SensorType.ACCELEROMETER: {
-                this.currentPoint.accelerometer = coordinate;
-                break;
-            }
-            case SensorType.GYROSCOPE: {
-                this.currentPoint.gyroscope = coordinate;
-                break;
-            }
-            case SensorType.MAGETOMETER: {
-                this.currentPoint.magnetometer = coordinate;
-                break;
-            }
-        }
+        this.currentPoint.set(sensorType, coordinate);
         if (this.currentPoint.isValid()) {
             this.callback(this.currentPoint.calibrate(this.zero));
         }
-    };
+    }
 
-    logError(err) {
+    static logError(err) {
         if (err !== undefined && err !== null) {
             console.log("Error: " + err);
         }
-    };
+    }
 }
 
 SensorTagConnector.DEFAULT_PERIOD = 100;
