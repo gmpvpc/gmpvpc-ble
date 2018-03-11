@@ -1,8 +1,8 @@
-import {PointDAO} from '../../src/dao/point/point-dao';
-import {DaoConfig} from "../../src/dao/dao-config";
+import PointDAO from '../../src/dao/point/point-dao';
+import DaoConfig from "../../src/dao/dao-config";
 import * as sinon from "sinon";
 import {Point} from '../../src/model/point';
-import {DaoRequest} from "../../src/dao/dao-request";
+import DaoRequest from "../../src/dao/dao-request";
 
 describe("Point DAO", () => {
 

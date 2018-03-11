@@ -1,5 +1,5 @@
 // import { DataSeries } from './data-series';
-import {PointDAO} from "./dao/point/point-dao";
+import PointDAO from "./dao/point/point-dao";
 import {Point} from "./model/point";
 
 /**

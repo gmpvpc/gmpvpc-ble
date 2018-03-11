@@ -1,11 +1,11 @@
-import {DaoConfig} from '../dao-config'
 import {InfluxDB} from "influx/lib/src/index";
-import {DaoRequest} from "../dao-request";
+import DaoConfig from '../dao-config'
+import DaoRequest from "../dao-request";
 
 /**
  * DAO Class to save point in InfluxDB
  */
-export class PointDAO {
+export default class PointDAO {
 
     static getInstance() {
         if (PointDAO.instance === null) {

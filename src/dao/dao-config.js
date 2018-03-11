@@ -3,7 +3,7 @@ import {FieldType} from 'influx'
 /**
  * Config of the DAO
  */
-export class DaoConfig {
+export default class DaoConfig {
 
     static get HOST() { return "localhost" };
     static get DB_NAME() { return "gmpvpc" };
