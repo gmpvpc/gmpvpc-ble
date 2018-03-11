@@ -7,14 +7,23 @@ import {DaoRequest} from "../dao-request";
  */
 export class PointDAO {
 
-    constructor() {
+    static getInstance() {
+        if (PointDAO.instance === null) {
+            new PointDAO();
+        }
+        return PointDAO.instance;
+    }
+
+    constructor(influxdb) {
         if (PointDAO.instance) {
             return PointDAO.instance;
         }
         PointDAO.instance = this;
-        this.influxdb = null;
-        this.connect();
-        this.createDb();
+        this.influxdb = influxdb;
+        if (influxdb === null) {
+            this.connect();
+            this.createDb();
+        }
     }
 
     /**
@@ -102,4 +111,4 @@ export class PointDAO {
         ).then((data) => callback(data));
     }
 }
-PointDAO.instance = new PointDAO();
+PointDAO.instance = null;
