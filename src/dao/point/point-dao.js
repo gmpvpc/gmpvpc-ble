@@ -6,7 +6,12 @@ import {DaoRequest} from "../dao-request";
  * DAO Class to save point in InfluxDB
  */
 export class PointDAO {
+
     constructor() {
+        if (PointDAO.instance) {
+            return PointDAO.instance;
+        }
+        PointDAO.instance = this;
         this.influxdb = null;
         this.connect();
         this.createDb();
@@ -97,3 +102,4 @@ export class PointDAO {
         ).then((data) => callback(data));
     }
 }
+PointDAO.instance = new PointDAO();

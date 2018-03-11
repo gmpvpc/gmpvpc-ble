@@ -7,7 +7,7 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./front,./.babelrc,./package.json,./npm-debug.log --copy-files",
-    "test": "babel-node test/index.js"
+    "test": "babel-node test/bin/jasmine.js"
   },
   "author": "Gautier Rouleau, Gwénolé Le Hénaff, Simon Arques",
   "license": "UNLICENSED",
