@@ -9,7 +9,8 @@
     "build": "rimraf dist/ && babel ./src/ --out-dir dist/ --ignore ./src/front/assets/,./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
     "dev-ui":"npm run build-dev-ui && node dist/index.js",
     "build-dev-ui":"rimraf dist/ && babel ./dev/ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
-    "test": "babel-node test/index.js"
+    "test": "babel-node test/index.js",
+    "mocks": "dyson mocks/"
   },
   "author": "Gautier Rouleau, Gwénolé Le Hénaff, Simon Arques",
   "license": "UNLICENSED",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
+    "dyson": "^2.0.0",
     "jasmine": "^3.0.0",
     "plotly.js": "^1.34.0",
     "rimraf": "^2.6.2",
