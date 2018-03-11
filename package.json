@@ -9,7 +9,7 @@
     "build": "rimraf dist/ && babel ./src/ --out-dir dist/ --ignore ./src/front/assets/,./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
     "dev-ui":"npm run build-dev-ui && node dist/index.js",
     "build-dev-ui":"rimraf dist/ && babel ./dev/ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
-    "test": "JASMINE_CONFIG_PATH=test/jasmine.json jasmine"
+    "test": "babel-node test/index.js"
   },
   "author": "Gautier Rouleau, Gwénolé Le Hénaff, Simon Arques",
   "license": "UNLICENSED",
