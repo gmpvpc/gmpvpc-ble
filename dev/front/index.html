@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Display glove Web-UI</title>
+    <script src="/ply/plotly.min.js"></script>
+    <script src="/io/socket.io.js"></script>
+    <style>
+        html, body, #plot{
+            height: 100%
+        }
+        pre{
+            background-color: #363636;
+            border: 5px solid #a8a8a8;
+            width: 80%;
+            min-height: 300px;
+            color: #FFFFFF;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<!-- <button onclick="sendAction('calibrate')">Calibrate</button> -->
+<!-- <button onclick="sendAction('connect')">Connect</button> -->
+
+<div id="plot"></div>
+
+<!--<div id="canvas"></div>-->
+<!-- <pre id="console"></pre> -->
+<script src="/js/main.js"></script>
+</body>
+</html>

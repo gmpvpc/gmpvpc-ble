@@ -1,15 +1,29 @@
-import {DaoConfig} from '../dao-config'
 import {InfluxDB} from "influx/lib/src/index";
-import {DaoRequest} from "../dao-request";
+import DaoConfig from '../dao-config'
+import DaoRequest from "../dao-request";
 
 /**
  * DAO Class to save point in InfluxDB
  */
-export class PointDAO {
-    constructor() {
-        this.influxdb = null;
-        this.connect();
-        this.createDb();
+export default class PointDAO {
+
+    static getInstance() {
+        if (PointDAO.instance === null) {
+            new PointDAO();
+        }
+        return PointDAO.instance;
+    }
+
+    constructor(influxdb) {
+        if (PointDAO.instance) {
+            return PointDAO.instance;
+        }
+        PointDAO.instance = this;
+        this.influxdb = influxdb;
+        if (influxdb === null) {
+            this.connect();
+            this.createDb();
+        }
     }
 
     /**
@@ -97,3 +111,4 @@ export class PointDAO {
         ).then((data) => callback(data));
     }
 }
+PointDAO.instance = null;
