@@ -1,20 +1,24 @@
 /**
  * Cette classe représente une coordonnée tridimensionnelle
  */
-export class Coordinate {
+export default class Coordinate {
     constructor(){
-        this.x = null;
-        this.y = null;
-        this.z = null;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
 
-    isEmpty() {
-        return this.x === null;
+    calibrate(zero) {
+        this.x -= zero.x;
+        this.y -= zero.y;
+        this.z -= zero.z;
+        return this;
     }
 
     fromXYZ(x,y,z) {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
     }
 }
