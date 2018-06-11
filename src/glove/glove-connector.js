@@ -11,7 +11,18 @@ export default class GloveConnector {
         this.callback = callback;
     }
 
+    getId() {
+        if (this.sensorTagConnector == null) {
+            return null;
+        }
+        return this.sensorTagConnector.gloveUuid;
+    }
+
+    isCalibrated() {
+        return this.sensorTagConnector != null && this.sensorTagConnector.zero != null;
+    }
+
     dataRetrieval(point) {
-        this.callback(point, this.gloveDataProcessing.process(point));
+        this.callback(this, point, this.gloveDataProcessing.process(point));
     }
 }

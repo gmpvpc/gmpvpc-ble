@@ -18,4 +18,8 @@ config.api = {
     }
 };
 
+config.glove = {
+    "address": "cc78ab7e7c84"
+};
+
 export default config;
