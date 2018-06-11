@@ -1,7 +1,7 @@
 const config = {};
 
 config.logger = {
-    path: "/var/log/gmpvpc",
+    path: "/var/log/gmpvpc/gmpvpc.log",
     type: "tiny"
 };
 
@@ -11,6 +11,10 @@ config.api = {
     "training": {
         "root": "/training",
         "current": "/current"
+    },
+    "glove": {
+        "root": "/glove",
+        "calibration": "/calibration"
     }
 };
 

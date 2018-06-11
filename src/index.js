@@ -6,7 +6,7 @@
 //     console.log(movement);
 //     console.log("-------------------------------------");
 // });
-import App from './api/app'
+import App from '~/api/app'
 
 let server = new App();
 server.start();

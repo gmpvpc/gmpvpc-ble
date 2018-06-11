@@ -1,10 +1,10 @@
 import express from 'express';
-import config from '../../config';
+import config from '~/config';
 
-const cfg = config.api.training;
+const api = config.api.training;
 
 let trainingController = express.Router();
-trainingController.get(cfg.current, (req, res) => {
+trainingController.get(api.current, (req, res) => {
     res.json({test: "haha"});
 });
 

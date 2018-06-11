@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-root-import": "^6.0.0",
     "babel-preset-es2015": "^6.24.1",
     "dyson": "^2.0.0",
     "jasmine": "^3.0.0",

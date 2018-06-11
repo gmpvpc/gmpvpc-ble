@@ -1,21 +1,22 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import router from './routes';
-import logger from './logger';
-import config from '../config';
+import router from '~/api/routes';
+import logger from '~/utils/logger';
+import config from '~/config';
 
 export default class App {
     constructor() {
         this.app = express();
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
-        this.app.use(logger);
+        this.app.use(logger.morgan);
         this.app.use(config.api.root, router);
     }
 
     start() {
+        logger.log(`GMPVPC Start ...`);
         this.app.listen(config.api.port, function () {
-            console.log(`GMPVPC Listenning port ${config.api.port}`);
+            logger.log(`GMPVPC Listening port ${config.api.port}`);
         });
     }
 }
