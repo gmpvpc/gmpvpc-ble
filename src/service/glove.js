@@ -3,23 +3,25 @@ import GloveConnector from "~/glove/glove-connector";
 import {Glove} from "~/models/dao/glove";
 import {toGloveDTO} from "~/models/mapper/glove";
 
+const serviceName = "GloveService";
+
 class GloveService {
     constructor() {
         this.gloves = new Map();
     }
 
     initialize(id) {
-        logger.log(`GloveService(${id}): Initialize...`);
+        logger.log(`${serviceName}(${id}): Initialize...`);
         let gloveConnector = new GloveConnector(id, (gloveConnector, point, movement) => this.dataProcessing(gloveConnector, point, movement));
         let glove = new Glove(id, gloveConnector);
         this.gloves.set(id, glove);
-        logger.log(`GloveService(${id}): Initialized.`);
+        logger.log(`${serviceName}(${id}): Initialized.`);
     }
 
     get(id) {
-        logger.log(`GloveService(${id}): Get...`);
+        logger.log(`${serviceName}(${id}): Get...`);
         let glove = toGloveDTO(this.gloves.get(id));
-        logger.log(`GloveService(${id}): Gotten.`);
+        logger.log(`${serviceName}(${id}): Gotten.`);
         return glove;
     }
 
