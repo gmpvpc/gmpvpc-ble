@@ -1,7 +1,7 @@
 import SensorTagConnector from "./sensortag-connector";
-import Coordinate from "../../model/coordinate";
-import Point from "../../model/point";
-import SensorType from "../../model/sensor-type";
+import Coordinate from "~/models/coordinate";
+import Point from "~/models/point";
+import SensorType from "~/models/sensor-type";
 
 /**
  * Calibration of a SensorTag

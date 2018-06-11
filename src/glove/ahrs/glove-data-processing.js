@@ -1,6 +1,6 @@
 import AHRS from 'ahrs/index';
-import Movement from "../../model/movement";
-import MathExt from "../../utils/math-extension.js"
+import Movement from "~/models/movement";
+import MathExt from "~/utils/math-extension"
 
 /**
  * Calculation of the movement attitude

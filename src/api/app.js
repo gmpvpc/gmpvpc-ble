@@ -15,7 +15,7 @@ export default class App {
 
     start() {
         logger.log(`GMPVPC Start ...`);
-        this.app.listen(config.api.port, function () {
+        this.app.listen(config.api.port, () => {
             logger.log(`GMPVPC Listening port ${config.api.port}`);
         });
     }

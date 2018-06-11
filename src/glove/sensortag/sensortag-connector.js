@@ -1,7 +1,7 @@
 import SensorTag from 'sensortag/lib/sensortag';
-import SensorType from '../../model/sensor-type';
-import Coordinate from "../../model/coordinate";
-import Point from "../../model/point";
+import SensorType from '~/models/sensor-type';
+import Coordinate from "~/models/coordinate";
+import Point from "~/models/point";
 import SensorTagCalibration from "./sensortag-calibration";
 
 /**
