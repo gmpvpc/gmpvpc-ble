@@ -7,9 +7,9 @@
 //     console.log("-------------------------------------");
 // });
 import App from '~/api/app'
-import hitRepository from '~/repositories/hit'
+import dao from '~/repositories/dao'
 
-hitRepository.init();
+dao.init();
 
 let server = new App();
 server.start();

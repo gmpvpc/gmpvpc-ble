@@ -23,7 +23,8 @@ config.glove = {
 };
 
 config.dao = {
-    uri: "postgres://gmpvpc:gmpvpc@localhost:5432/gmpvpc"
+    uri: "postgres://gmpvpc:gmpvpc@localhost:5432/gmpvpc",
+    force: true
 };
 
 export default config;

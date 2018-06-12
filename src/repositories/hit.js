@@ -1,24 +1,17 @@
 import * as Sequelize from "sequelize/lib/data-types";
-import sequelize from '~/repositories/config'
-import logger from '~/utils/logger';
+import dao from '~/repositories/dao'
+import Repository from "~/repositories/repository";
 
-const repositoryName = "HitRepository";
+class HitRepository extends Repository {
 
-class HitRepository {
-    constructor() {
-        this.repository = null;
-    }
     init() {
-        this.repository = sequelize.define('hit', {
+        this.repository = dao.connection.define('hit', {
             duration: {
                 type: Sequelize.FLOAT(11)
             },
             velocity: {
                 type: Sequelize.FLOAT(11)
             }
-        });
-        this.repository.sync().then(() => {
-            logger.log(`${repositoryName}: Synced.`)
         });
     }
 }
