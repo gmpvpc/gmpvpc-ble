@@ -1,4 +1,4 @@
-import {Entity} from "~/models/dao/entity";
+import {Entity} from "~/models/dto/entity";
 
 export default class Series extends Entity {
     constructor() {

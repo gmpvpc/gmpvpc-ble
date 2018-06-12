@@ -10,9 +10,22 @@ let trainingController = express.Router();
 
 trainingController.get(api.current, (req, res) => {
     logger.log(`${controllerName}(${req.params.id}): Get current...`);
-    let training = null;
-    trainingService.getCurrent().then(r => training = r);
+    let training = trainingService.getCurrent();
     logger.log(`${controllerName}(${req.params.id}): Current gotten.`);
+    res.json(training);
+});
+
+trainingController.post('/', (req, res) => {
+    logger.log(`${controllerName}(): Create...`);
+    let training = trainingService.create(...req.body);
+    logger.log(`${controllerName}(${req.params.id}): Created.`);
+    res.json(training);
+});
+
+trainingController.put('/', (req, res) => {
+    logger.log(`${controllerName}(${req.params.id})): Update...`);
+    let training = trainingService.update(req.params.id, req.body);
+    logger.log(`${controllerName}(${req.params.id}): Updated.`);
     res.json(training);
 });
 

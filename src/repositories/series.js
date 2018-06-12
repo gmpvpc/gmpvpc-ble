@@ -1,6 +1,6 @@
+import Repository from "~/repositories/repository";
 import dao from '~/repositories/dao'
 import hitRepository from '~/repositories/hit'
-import Repository from "./repository";
 
 class SeriesRepository extends Repository {
 

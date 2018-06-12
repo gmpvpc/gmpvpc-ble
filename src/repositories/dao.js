@@ -1,9 +1,9 @@
 import Sequelize from 'sequelize';
 import logger from '~/utils/logger';
 import config from '~/config';
-import hitRepository from '~/repositories/hit'
-import seriesRepository from '~/repositories/series'
-import trainingRepository from '~/repositories/training'
+import hitRepository from '~/repositories/hit';
+import seriesRepository from '~/repositories/series';
+import trainingRepository from '~/repositories/training';
 
 class Dao {
 
@@ -21,6 +21,7 @@ class Dao {
 
     init() {
         this.repositories.forEach(r => {
+            console.log(r);
             r.init();
         });
         this.connection.sync({force: config.dao.force}).then(() => {

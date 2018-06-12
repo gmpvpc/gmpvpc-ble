@@ -4,5 +4,9 @@ export function toGloveDTO(glove) {
     if (!glove) {
         return {};
     }
-    return new GloveDTO(glove.id, glove.started, glove.isCalibrated());
+    let gloveDTO = new GloveDTO();
+    gloveDTO.id = glove.id;
+    gloveDTO.started = glove.started;
+    gloveDTO.calibrated = glove.isCalibrated();
+    return gloveDTO;
 }

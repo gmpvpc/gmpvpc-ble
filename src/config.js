@@ -15,6 +15,9 @@ config.api = {
     glove: {
         root: "/glove",
         calibration: "/calibration"
+    },
+    series: {
+        root: "/series"
     }
 };
 
