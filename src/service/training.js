@@ -1,20 +1,17 @@
 import logger from "~/utils/logger"
 import {Training} from "~/models/dao/training";
 import {toTrainingDTO} from "~/models/mapper/training";
+import trainingRepository from '~/repositories/training';
 
 const serviceName = "TrainingService";
 
 class TrainingService {
     constructor() {
-        this.currentId = null;
     }
 
     getCurrent() {
-        if (!this.currentId) {
-            return null;
-        }
         logger.log(`${serviceName}(${this.currentId}): Get...`);
-        let training;
+        let training = trainingRepository.getCurrent();
         logger.log(`${serviceName}(${this.currentId}): Gotten.`);
         return training;
     }

@@ -10,7 +10,8 @@ let trainingController = express.Router();
 
 trainingController.get(api.current, (req, res) => {
     logger.log(`${controllerName}(${req.params.id}): Get current...`);
-    let training = trainingService.getCurrent();
+    let training = null;
+    trainingService.getCurrent().then(r => training = r);
     logger.log(`${controllerName}(${req.params.id}): Current gotten.`);
     res.json(training);
 });
