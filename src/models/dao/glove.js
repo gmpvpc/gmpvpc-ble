@@ -1,6 +1,9 @@
-export class Glove {
+import {Entity} from "~/models/dao/entity";
+
+export class Glove extends Entity {
 
     constructor(id, gloveConnector) {
+        super();
         this.id = id;
         this.gloveConnector = gloveConnector;
         this.started = false;

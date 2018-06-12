@@ -7,6 +7,9 @@
 //     console.log("-------------------------------------");
 // });
 import App from '~/api/app'
+import hitRepository from '~/repositories/hit'
+
+hitRepository.init();
 
 let server = new App();
 server.start();
