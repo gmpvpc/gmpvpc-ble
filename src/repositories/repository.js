@@ -1,6 +1,7 @@
 export default class Repository {
 
-    constructor() {
+    constructor(dao) {
+        this.dao = dao;
         this.repository = null;
     }
 

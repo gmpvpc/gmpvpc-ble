@@ -1,14 +1,12 @@
 import Repository from "~/repositories/repository";
 import dao from '~/repositories/dao'
-import hitRepository from '~/repositories/hit'
+import {hitRepository} from '~/index'
 
-class SeriesRepository extends Repository {
+export default class SeriesRepository extends Repository {
 
     init() {
-        this.repository = dao.connection.define('series', {});
+        this.repository = this.dao.connection.define('series', {});
         this.repository.hasMany(hitRepository.repository, {as: 'combinations'});
     }
 
 }
-
-export default new SeriesRepository();

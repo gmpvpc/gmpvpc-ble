@@ -1,14 +1,10 @@
 import Sequelize from 'sequelize';
 import logger from '~/utils/logger';
 import config from '~/config';
-import hitRepository from '~/repositories/hit';
-import seriesRepository from '~/repositories/series';
-import trainingRepository from '~/repositories/training';
 
-class Dao {
+export default class Dao {
 
     constructor() {
-        this.repositories = [hitRepository, seriesRepository, trainingRepository];
         this.connection = new Sequelize(config.dao.uri);
         this.connection.authenticate()
             .then(() => {
@@ -19,10 +15,9 @@ class Dao {
             });
     }
 
-    init() {
-        this.repositories.forEach(r => {
-            console.log(r);
-            r.init();
+    init(repositories) {
+        repositories.forEach(r => {
+            r.init(this);
         });
         this.connection.sync({force: config.dao.force}).then(() => {
             logger.log(`Dao: Synced.`)
@@ -30,5 +25,3 @@ class Dao {
     }
 
 }
-
-export default new Dao();

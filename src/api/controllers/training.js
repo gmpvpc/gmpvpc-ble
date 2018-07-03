@@ -17,9 +17,10 @@ trainingController.get(api.current, (req, res) => {
 
 trainingController.post('/', (req, res) => {
     logger.log(`${controllerName}(): Create...`);
-    let training = trainingService.create(...req.body);
-    logger.log(`${controllerName}(${req.params.id}): Created.`);
-    res.json(training);
+    trainingService.create(...req.body).then(t => {
+        logger.log(`${controllerName}(${req.params.id}): Created.`);
+        res.json(t);
+    });
 });
 
 trainingController.put('/', (req, res) => {

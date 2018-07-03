@@ -4,5 +4,6 @@ export default class Series extends Entity {
     constructor() {
         super();
         this.combinations = [];
+        this.occurrence = 10;
     }
 }
