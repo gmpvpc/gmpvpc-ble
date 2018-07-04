@@ -1,7 +1,7 @@
 import express from 'express';
 import logger from '~/utils/logger'
 import config from '~/config';
-import gloveService from '~/service/glove'
+import gloveService from '~/services/glove'
 
 const api = config.api.glove;
 const controllerName = "GloveController";

@@ -1,7 +1,7 @@
 import express from 'express';
 import logger from "~/utils/logger"
 import config from '~/config';
-import trainingService from '~/service/training'
+import trainingService from '~/services/training'
 
 const api = config.api.training;
 const controllerName = "TrainingController";
@@ -10,9 +10,10 @@ let trainingController = express.Router();
 
 trainingController.get(api.current, (req, res) => {
     logger.log(`${controllerName}(${req.params.id}): Get current...`);
-    let training = trainingService.getCurrent();
-    logger.log(`${controllerName}(${req.params.id}): Current gotten.`);
-    res.json(training);
+    let training = trainingService.getCurrent().then(t => {
+        logger.log(`${controllerName}(${req.params.id}): Current gotten.`);
+        res.json(training);
+    });
 });
 
 trainingController.post('/', (req, res) => {
@@ -25,9 +26,10 @@ trainingController.post('/', (req, res) => {
 
 trainingController.put('/', (req, res) => {
     logger.log(`${controllerName}(${req.params.id})): Update...`);
-    let training = trainingService.update(req.params.id, req.body);
-    logger.log(`${controllerName}(${req.params.id}): Updated.`);
-    res.json(training);
+    let training = trainingService.update(req.params.id, req.body).then(t => {
+        logger.log(`${controllerName}(${req.params.id}): Updated.`);
+        res.json(training);
+    });
 });
 
 export default trainingController;

@@ -9,6 +9,10 @@ export default class Repository {
         return this.repository.create(object);
     }
 
+    get(id) {
+        return this.repository.findById(id);
+    }
+
     update(id, data) {
         return this.repository.update(data, {where: id});
     }
