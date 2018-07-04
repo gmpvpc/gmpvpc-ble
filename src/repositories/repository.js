@@ -2,6 +2,7 @@ export default class Repository {
 
     constructor(dao) {
         this.dao = dao;
+        this.dao.repositories.push(this);
         this.repository = null;
     }
 

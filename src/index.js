@@ -16,7 +16,7 @@ let dao = new Dao();
 export let hitRepository = new HitRepository(dao);
 export let seriesRepository = new SeriesRepository(dao);
 export let trainingRepository = new TrainingRepository(dao);
-dao.init([hitRepository, seriesRepository, trainingRepository]);
+dao.init();
 
 let server = new App();
 server.start();

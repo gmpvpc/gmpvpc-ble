@@ -30,4 +30,8 @@ config.dao = {
     force: true
 };
 
+config.domain = {
+    pointNumbersToAvg: 11
+};
+
 export default config;
