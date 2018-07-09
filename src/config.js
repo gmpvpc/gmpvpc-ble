@@ -18,6 +18,13 @@ config.api = {
     },
     series: {
         root: "/series"
+    },
+    device: {
+        root: "/device",
+        register: "/register",
+        unregister: "/unregister",
+        info: "/info",
+        version: "/version",
     }
 };
 
