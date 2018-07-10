@@ -1,4 +1,4 @@
-import {Entity} from "~/models/entity";
+import {Entity} from "~/models/dao/entity";
 
 export default class Device extends Entity {
     constructor() {

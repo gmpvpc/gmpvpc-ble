@@ -7,7 +7,7 @@ export default class TrainingRepository extends Repository {
 
     init() {
         this.repository = this.dao.connection.define('training', {status: Sequelize.STRING(25)});
-        this.repository.hasMany(seriesRepository.repository, {as: 'series'});
+        seriesRepository.hasManyParentAssociation = this.repository.hasMany(seriesRepository.repository, {as: 'series'});
     }
 
     getCurrent() {

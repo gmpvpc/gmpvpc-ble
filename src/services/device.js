@@ -1,5 +1,5 @@
 import logger from "~/utils/logger"
-import {Device} from "~/models/device/device";
+import {Device} from "~/models/dao/device";
 import Version from "~/models/dto/version";
 import {deviceRepository} from '~/index';
 

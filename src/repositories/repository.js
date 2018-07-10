@@ -4,10 +4,15 @@ export default class Repository {
         this.dao = dao;
         this.dao.repositories.push(this);
         this.repository = null;
+        this.hasManyParentAssociation = null;
     }
 
     create(object) {
-        return this.repository.create(object);
+        if (this.hasManyParentAssociation != null) {
+            this.hasManyParentAssociation.add(object)
+        } else {
+            return this.repository.create(object);
+        }
     }
 
     get(id) {

@@ -23,7 +23,7 @@ export default class HitCalculation {
         if (this.hitBeggin && avg < 1) {
             const hit = new Hit();
             hit.duration = Date.now() - this.hitBeggin;
-            hit.velocity = 0.62 * hit.duration;
+            hit.velocity = 0.62 / hit.duration;
             this.hitBeggin = null;
             return hit;
         }

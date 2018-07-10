@@ -6,7 +6,7 @@ export default class SeriesRepository extends Repository {
 
     init() {
         this.repository = this.dao.connection.define('series', {});
-        this.repository.hasMany(hitRepository.repository, {as: 'combinations'});
+        hitRepository.hasManyParentAssociation = this.repository.hasMany(hitRepository.repository, {as: 'combinations'});
     }
 
 }

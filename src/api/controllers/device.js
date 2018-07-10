@@ -1,9 +1,9 @@
 import express from 'express';
 import logger from '~/utils/logger'
 import config from '~/config';
-import deviceService from '~/service/device'
+import deviceService from '~/services/device'
 
-const api = config.api.ota;
+const api = config.api.device;
 const controllerName = "DeviceController";
 
 let deviceController = express.Router();

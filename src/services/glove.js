@@ -33,7 +33,7 @@ class GloveService {
         }
         const hit = glove.hitCalculation.addPointCalculation(point);
         if (hit) {
-            hitRepository.create({...hit, })
+            hitRepository.create(hit);
         }
     }
 
