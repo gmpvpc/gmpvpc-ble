@@ -1,7 +1,7 @@
 /**
  * All preconfigured request
  */
-export default class DaoRequest {
+export default class Request {
 
     static get SELECT() { return "SELECT * FROM" };
 

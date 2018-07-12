@@ -1,29 +1,16 @@
 import {InfluxDB} from "influx/lib/src/index";
-import DaoConfig from '../dao-config'
-import DaoRequest from "../dao-request";
+import DaoConfig from './config/config'
+import Request from "./config/request";
 
 /**
  * DAO Class to save point in InfluxDB
  */
-export default class PointDAO {
+class Point {
 
-    static getInstance() {
-        if (PointDAO.instance === null) {
-            new PointDAO();
-        }
-        return PointDAO.instance;
-    }
-
-    constructor(influxdb) {
-        if (PointDAO.instance) {
-            return PointDAO.instance;
-        }
-        PointDAO.instance = this;
-        this.influxdb = influxdb;
-        if (influxdb === null) {
-            this.connect();
-            this.createDb();
-        }
+    constructor() {
+        this.influxdb = null;
+        this.connect();
+        this.createDb();
     }
 
     /**
@@ -69,15 +56,15 @@ export default class PointDAO {
                     [DaoConfig.SERIES_ID]: seriesId
                 },
                 fields: {
-                    [DaoConfig.POINT_FIELD_ACC_X]: point.accelero.x,
-                    [DaoConfig.POINT_FIELD_ACC_Y]: point.accelero.y,
-                    [DaoConfig.POINT_FIELD_ACC_Z]: point.accelero.z,
-                    [DaoConfig.POINT_FIELD_GYR_X]: point.gyro.x,
-                    [DaoConfig.POINT_FIELD_GYR_Y]: point.gyro.y,
-                    [DaoConfig.POINT_FIELD_GYR_Z]: point.gyro.z,
-                    [DaoConfig.POINT_FIELD_MAG_X]: point.magneto.x,
-                    [DaoConfig.POINT_FIELD_MAG_Y]: point.magneto.y,
-                    [DaoConfig.POINT_FIELD_MAG_Z]: point.magneto.z
+                    [DaoConfig.POINT_FIELD_ACC_X]: point.accelerometer.x,
+                    [DaoConfig.POINT_FIELD_ACC_Y]: point.accelerometer.y,
+                    [DaoConfig.POINT_FIELD_ACC_Z]: point.accelerometer.z,
+                    [DaoConfig.POINT_FIELD_GYR_X]: point.gyroscope.x,
+                    [DaoConfig.POINT_FIELD_GYR_Y]: point.gyroscope.y,
+                    [DaoConfig.POINT_FIELD_GYR_Z]: point.gyroscope.z,
+                    [DaoConfig.POINT_FIELD_MAG_X]: point.magnetometer.x,
+                    [DaoConfig.POINT_FIELD_MAG_Y]: point.magnetometer.y,
+                    [DaoConfig.POINT_FIELD_MAG_Z]: point.magnetometer.z
                 },
             }]
         ).then(callback);
@@ -90,9 +77,9 @@ export default class PointDAO {
      */
     findAll(callback) {
         this.influxdb.query(
-            DaoRequest.SELECT +
-            DaoRequest.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
-            DaoRequest.ORDER_BY + DaoRequest.DESC(DaoConfig.POINT_FIELD_TIME)
+            Request.SELECT +
+            Request.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
+            Request.ORDER_BY + Request.DESC(DaoConfig.POINT_FIELD_TIME)
         ).then((data) => callback(data));
     }
 
@@ -104,11 +91,12 @@ export default class PointDAO {
      */
     findBySeriesId(seriesId, callback) {
         this.influxdb.query(
-            DaoRequest.SELECT +
-            DaoRequest.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
-            DaoRequest.WHERE(DaoConfig.SERIES_ID, seriesId) +
-            DaoRequest.ORDER_BY + DaoRequest.ASC(DaoConfig.POINT_FIELD_TIME)
+            Request.SELECT +
+            Request.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
+            Request.WHERE(DaoConfig.SERIES_ID, seriesId) +
+            Request.ORDER_BY + Request.ASC(DaoConfig.POINT_FIELD_TIME)
         ).then((data) => callback(data));
     }
 }
-PointDAO.instance = null;
+
+export default new Point();
