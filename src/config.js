@@ -41,4 +41,10 @@ config.domain = {
     pointNumbersToAvg: 11
 };
 
+config.rabbit = {
+    queue: "gmpvpc",
+    exchange: "gmpvpc",
+    url: "amqp://guest:guest@localhost:5672"
+};
+
 export default config;

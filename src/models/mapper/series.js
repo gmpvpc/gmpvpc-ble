@@ -10,7 +10,7 @@ export function toSeriesDTO(series) {
     seriesDTO.createdAt = series.createdAt;
     seriesDTO.updatedAt = series.updatedAt;
     seriesDTO.combinations = toHitsDTO(series.combinations);
-    seriesDTO.occurence = series.occurence;
+    seriesDTO.occurrence = series.occurrence;
     return seriesDTO;
 }
 

@@ -9,14 +9,15 @@ import SensorTagCalibration from "./sensortag-calibration";
  * Connect a new Sensor Tag
  */
 export default class SensorTagConnector {
-    constructor(gloveUuid, callback) {
+    constructor(gloveUuid, calibratedCallback, dataRetrievalCallback) {
         this.sensorTag = null;
         this.zero = null;
         this.sensorTagCalibration = null;
         this.gloveUuid = gloveUuid;
         this.currentPoint = new Point();
         this.currentPointTimeStamp = Date.now();
-        this.callback = callback;
+        this.dataRetrievalCallback = dataRetrievalCallback;
+        this.calibratedCallback = calibratedCallback;
         this.connect();
     }
 
@@ -68,6 +69,7 @@ export default class SensorTagConnector {
         this.sensorTag.on('gyroscopeChange', (x, y, z) => this.addCoordinateToCurrentPoint(SensorType.GYROSCOPE, new Coordinate().fromXYZ(x, y, z)));
         this.sensorTag.on('magnetometerChange', (x, y, z) => this.addCoordinateToCurrentPoint(SensorType.MAGETOMETER, new Coordinate().fromXYZ(x, y, z)));
         logger.log("Data retrieval enabled");
+        this.calibratedCallback(this.gloveUuid);
     }
 
     calibration(zero) {
@@ -83,7 +85,7 @@ export default class SensorTagConnector {
         }
         this.currentPoint.set(sensorType, coordinate);
         if (this.currentPoint.isValid()) {
-            this.callback(this.currentPoint.calibrate(this.zero));
+            this.dataRetrievalCallback(this.currentPoint.calibrate(this.zero));
         }
     }
 

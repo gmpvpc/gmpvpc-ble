@@ -5,5 +5,6 @@ export default class Hit extends Entity {
         super();
         this.velocity = null;
         this.duration = null;
+        this.normals = [];
     }
 }

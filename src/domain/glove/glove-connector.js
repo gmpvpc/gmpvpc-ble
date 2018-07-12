@@ -6,11 +6,11 @@ import GloveDataProcessing from "./ahrs/glove-data-processing";
  * Glove connector to connect, calibrate and process a new glove
  */
 export default class GloveConnector {
-    constructor(gloveUuid, callback) {
+    constructor(gloveUuid, calibratedCallback, dataRetrievalCallback) {
         gloveUuid = gloveUuid.toLowerCase();
         this.gloveDataProcessing = new GloveDataProcessing(1000 / SensorTagConnector.DEFAULT_PERIOD);
-        this.sensorTagConnector = new SensorTagConnector(gloveUuid, (point) => this.dataRetrieval(point));
-        this.callback = callback;
+        this.sensorTagConnector = new SensorTagConnector(gloveUuid, calibratedCallback, (point) => this.dataRetrieval(point));
+        this.dataRetrievalCallback = dataRetrievalCallback;
     }
 
     getId() {
@@ -32,6 +32,6 @@ export default class GloveConnector {
     }
 
     dataRetrieval(point) {
-        this.callback(this, point, this.gloveDataProcessing.process(point));
+        this.dataRetrievalCallback(this, point, this.gloveDataProcessing.process(point));
     }
 }

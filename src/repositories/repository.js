@@ -9,11 +9,11 @@ export default class Repository {
     }
 
     create(object) {
-        if (this.hasManyParentAssociation != null) {
-            this.hasManyParentAssociation.add(object);
-        } else {
+        // if (this.hasManyParentAssociation != null) {
+        //     this.hasManyParentAssociation.add(object);
+        // } else {
             return this.repository.create(object, {include: this.includes});
-        }
+        // }
     }
 
     get(id) {

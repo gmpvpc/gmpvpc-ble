@@ -30,6 +30,7 @@ export default class HitCalculation {
             const hit = new Hit();
             hit.duration = duration;
             hit.velocity = 0.62 / hit.duration;
+            hit.normals = this.lastNorms;
             this.hitBeggin = null;
             return hit;
         }

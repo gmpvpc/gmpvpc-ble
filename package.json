@@ -16,6 +16,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "ahrs": "^1.1.6",
+    "amqplib": "^0.5.2",
     "async": "^2.6.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",

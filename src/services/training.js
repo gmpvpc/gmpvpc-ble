@@ -5,6 +5,7 @@ import {toTrainingDTO, toTrainingsDTO} from "~/models/mapper/training";
 import TrainingStatus from "~/models/dao/training-status";
 import {seriesRepository, trainingRepository} from '~/index'
 import gloveService from './glove';
+import rabbitConsumer from '~/consumer/rabbit';
 
 const serviceName = "TrainingService";
 
@@ -19,7 +20,7 @@ class TrainingService {
         return new Promise((resolve, reject) => {
             logger.log(`${serviceName}(${this.currentId}): Get...`);
             let training = null;
-            trainingRepository.getCurrent()
+            trainingRepository.get(this.currentId)
                 .then(t => {
                     training = toTrainingDTO(t);
                     logger.log(`${serviceName}(${this.currentId}): Gotten.`);
@@ -67,6 +68,7 @@ class TrainingService {
                         if (gloveId) {
                             gloveService.stop(gloveId);
                         }
+                        rabbitConsumer.publish("training:" + training);
                     }
                     resolve(training);
                 })

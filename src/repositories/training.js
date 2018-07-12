@@ -11,10 +11,4 @@ export default class TrainingRepository extends Repository {
         this.includes = [{model: seriesRepository.repository, as: 'series'}];
     }
 
-    getCurrent() {
-        return this.repository.findOne({
-            where: {status: TrainingStatus.IN_PROGRESS}
-        }, {include: this.includes});
-    }
-
 }
