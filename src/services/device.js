@@ -1,61 +1,63 @@
-import logger from "~/utils/logger"
 import {Device} from "~/models/dao/device";
 import Version from "~/models/dto/version";
 import {deviceRepository} from '~/index';
+import LogFormat from "~/utils/log-format";
 
-const serviceName = "DeviceService";
+class DeviceService extends LogFormat {
 
-class DeviceService {
+    constructor() {
+        super("DeviceService");
+    }
 
     register(uid) {
-        logger.log(`${serviceName}(${uid}): Register...`);
+        this.log(uid, `Register...`);
         return new Promise((resolve, reject) => {
             deviceRepository.create({uid: uid})
                 .then(d => {
-                    logger.log(`${serviceName}(${uid}): Registered.`);
+                    this.log(uid, `Registered.`);
                     resolve(d);
                 })
                 .catch(err => {
-                    logger.log(`${serviceName}(${uid}): Register failed - ${err}`);
+                    this.log(uid, `Register failed - ${err}`);
                     reject();
                 });
         });
     }
 
     unregister(uid) {
-        logger.log(`${serviceName}(${uid}): Unregister...`);
+        this.log(uid, `Unregister...`);
         return new Promise((resolve, reject) => {
             deviceRepository.deleteByUid(uid)
                 .then(d => {
-                    logger.log(`${serviceName}(${uid}): Unregistered.`);
+                    this.log(uid, `Unregistered.`);
                     resolve(d);
                 }).catch(err => {
-                logger.log(`${serviceName}(${uid}): Unregister failed - ${err}`);
+                this.log(uid, `Unregister failed - ${err}`);
                 reject();
             });
         })
     }
 
     info(uid, data) {
-        logger.log(`${serviceName}(${uid}): Info...`);
+        this.log(uid, `Info...`);
         return new Promise((resolve, reject) => {
             deviceRepository.findByUid(uid)
                 .then(d => {
                     if (d != null) {
                         deviceRepository.update(d.id, data);
                     }
-                    logger.log(`${serviceName}(${uid}): Info gotten: ${d}`);
+                    this.log(uid, `Info gotten: ${d}`);
                     resolve(d);
                 })
                 .catch(err => {
-                    logger.log(`${serviceName}(${uid}): Info failed - ${err}`);
+                    this.log(uid, `Info failed - ${err}`);
                     reject();
                 });
         });
     }
 
     version(uid) {
-        logger.log(`${serviceName}(${uid}): Version...`);
+        this.log(uid, `Version...`);
         return new Promise((resolve, reject) => {
             deviceRepository.findByUid(uid)
                 .then(d => {
@@ -63,11 +65,11 @@ class DeviceService {
                     if (d != null) {
                         version.link = "https://new_version";
                     }
-                    logger.log(`${serviceName}(${uid}): Version gotten: ${version}`);
+                    this.log(uid, `Version gotten: ${version}`);
                     resolve(version);
                 })
                 .catch(err => {
-                    logger.log(`${serviceName}(${uid}): Version failed - ${err}`);
+                    this.log(uid, `Version failed - ${err}`);
                     reject();
                 });
         });

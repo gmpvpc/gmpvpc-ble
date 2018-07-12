@@ -44,7 +44,7 @@ config.domain = {
 config.rabbit = {
     queue: "gmpvpc",
     exchange: "gmpvpc",
-    url: "amqp://guest:guest@localhost:5672"
+    url: "amqp://gmpvpc:gmpvpc@localhost:5672/gmpvpc"
 };
 
 export default config;

@@ -2,20 +2,20 @@ import {toSeriesDTO} from "~/models/mapper/series";
 import {seriesRepository, trainingRepository} from '~/index'
 import LogFormat from "~/utils/log-format";
 
-class SeriesService extends LogFormat {
+class HitService extends LogFormat {
 
     constructor() {
-        super("SeriesService");
+        super("HitService")
     }
 
     get(seriesId) {
         return new Promise((resolve, reject) => {
-            this.log(seriesId, "Get...");
+            this.log(seriesId, `Get...`);
             let series = null;
             seriesRepository.get(seriesId)
                 .then(t => {
                     series = toSeriesDTO(t);
-                    this.log(seriesId, "Gotten.");
+                    this.log(seriesId, `Gotten.`);
                     resolve(series);
                 })
                 .catch(err => {
@@ -28,10 +28,9 @@ class SeriesService extends LogFormat {
     update(id, data) {
         return new Promise((resolve, reject) => {
             this.log(id, `Update...`);
-            let series = [];
             trainingRepository.update(id, data)
                 .then(([r, [t]]) => {
-                    series = toSeriesDTO(t);
+                    const series = toSeriesDTO(t);
                     this.log(series.id, `Updated.`);
                     resolve(series);
                 })
@@ -44,4 +43,4 @@ class SeriesService extends LogFormat {
 
 }
 
-export default new SeriesService();
+export default new HitService();

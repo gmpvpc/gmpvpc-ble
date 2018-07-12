@@ -1,28 +1,29 @@
-import logger from "~/utils/logger"
 import config from '~/config';
 import amqp from 'amqplib/callback_api';
+import LogFormat from "~/utils/log-format";
 
-class RabbitConsumer {
+class RabbitConsumer extends LogFormat {
     constructor() {
-        logger.log(`RabbitConsumer: Connect...`);
+        super("RabbitConsumer");
+        this.log("", `Connect...`);
         amqp.connect(config.rabbit.url, (err, conn) => {
             if (conn) {
                 conn.createChannel((err, ch) => {
                     ch.assertQueue(config.rabbit.queue, {durable: false});
                     this.channel = ch;
-                    logger.log(`RabbitConsumer: Connected.`);
+                    this.log("", `Connected.`);
                 });
             } else {
-                logger.log(`RabbitConsumer: No connection - ${err}`);
+                this.log("", `No connection - ${err}`);
             }
         });
     }
 
     publish(type, object) {
-        logger.log(`RabbitConsumer: Send message: ${type}`);
+        this.log("", `Send message: ${type}`);
         const message = `${type}:${JSON.stringify(object)}`;
         this.channel.sendToQueue(config.rabbit.queue, new Buffer(message));
-        logger.log(`RabbitConsumer: Message sent: ${message}`);
+        this.log("", `Message sent: ${message}`);
     }
 }
 

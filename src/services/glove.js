@@ -1,32 +1,30 @@
-import logger from "~/utils/logger"
 import GloveConnector from "~/domain/glove/glove-connector";
 import {Glove} from "~/models/dao/glove";
 import {toGloveDTO} from "~/models/mapper/glove";
 import {toHitDTO} from "~/models/mapper/hit";
-import {hitRepository} from '~/index';
 import trainingService from "~/services/training";
 import rabbitConsumer from '~/consumers/rabbit';
+import LogFormat from "~/utils/log-format";
 
-const serviceName = "GloveService";
-
-class GloveService {
+class GloveService extends LogFormat {
     constructor() {
+        super("GloveService");
         this.gloves = new Map();
     }
 
     initialize(id) {
-        logger.log(`${serviceName}(${id}): Initialize...`);
+        this.log(id, `Initialize...`);
         const gloveConnector = new GloveConnector(id, (id) => this.calibrated(id), (gloveConnector, point, movement) => this.dataProcessing(gloveConnector, point, movement));
         const glove = new Glove(gloveConnector.getId(), gloveConnector);
         this.gloves.set(gloveConnector.getId(), glove);
         trainingService.addGloveToCurrent(gloveConnector.getId());
-        logger.log(`${serviceName}(${id}): Initialized.`);
+        this.log(id, `Initialized.`);
     }
 
     get(id) {
-        logger.log(`${serviceName}(${id}): Get...`);
+        this.log(id, `Get...`);
         const glove = toGloveDTO(this.gloves.get(id.toLowerCase()));
-        logger.log(`${serviceName}(${id}): Gotten.`);
+        this.log(id, `Gotten.`);
         return glove;
     }
 
@@ -41,7 +39,7 @@ class GloveService {
         const glove = this.gloves.get(gloveConnector.getId());
         const hit = glove.hitCalculation.addPointCalculation(point);
         if (hit) {
-            logger.log(`${serviceName}(${gloveConnector.getId()}): Hit detected - duration: ${hit.duration}`);
+            this.log(gloveConnector.getId(), `Hit detected - duration: ${hit.duration}`);
             rabbitConsumer.publish("hit", toHitDTO(hit));
         }
     }
