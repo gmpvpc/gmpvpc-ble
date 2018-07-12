@@ -5,7 +5,7 @@ import {toTrainingDTO, toTrainingsDTO} from "~/models/mapper/training";
 import TrainingStatus from "~/models/dao/training-status";
 import {seriesRepository, trainingRepository} from '~/index'
 import gloveService from './glove';
-import rabbitConsumer from '~/consumer/rabbit';
+import rabbitConsumer from '~/consumers/rabbit';
 
 const serviceName = "TrainingService";
 
@@ -68,7 +68,7 @@ class TrainingService {
                         if (gloveId) {
                             gloveService.stop(gloveId);
                         }
-                        rabbitConsumer.publish("training:" + training);
+                        rabbitConsumer.publish("training", training);
                     }
                     resolve(training);
                 })

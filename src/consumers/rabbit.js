@@ -18,10 +18,11 @@ class RabbitConsumer {
         });
     }
 
-    publish(message) {
-        logger.log(`RabbitConsumer: Send message: ${message}`);
+    publish(type, object) {
+        logger.log(`RabbitConsumer: Send message: ${type}`);
+        const message = `${type}:${JSON.stringify(object)}`;
         this.channel.sendToQueue(config.rabbit.queue, new Buffer(message));
-        logger.log(`RabbitConsumer: Message sent.`);
+        logger.log(`RabbitConsumer: Message sent: ${message}`);
     }
 }
 
