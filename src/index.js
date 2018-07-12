@@ -1,4 +1,4 @@
-// import GloveConnector from "./glove/glove-connector";
+// import GloveConnector from "./domain/glove/glove-connector";
 //
 // let gloveConnector = new GloveConnector("cc78ab7e7c84", (point, movement) => {
 //     console.log("-------------------------------------");

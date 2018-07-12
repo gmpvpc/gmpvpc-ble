@@ -1,7 +1,8 @@
-import SensorTagConnector from "./sensortag-connector";
+import logger from '~/utils/logger'
 import Coordinate from "~/models/coordinate";
 import Point from "~/models/point";
 import SensorType from "~/models/sensor-type";
+import SensorTagConnector from "./sensortag-connector";
 
 /**
  * Calibration of a SensorTag
@@ -22,7 +23,7 @@ export default class SensorTagCalibration {
     }
 
     calibrate(sensorType, readCallback) {
-        console.log("Calibrate " + sensorType + "...");
+        logger.log("Calibrate " + sensorType + "...");
         let calibratePoints = (err, x, y, z) => {
             if (x === 0 && y === 0 && z === 0) {
                 return;
@@ -31,7 +32,7 @@ export default class SensorTagCalibration {
             if (this.coordinates(sensorType).size >= SensorTagConnector.CALIBRATION_POINTS) {
                 clearInterval(interval);
                 this.zero.set(sensorType, this.calcAvg(this.coordinates(sensorType)));
-                console.log(sensorType + " Calibrated.");
+                logger.log(sensorType + " Calibrated.");
                 this.finishCalibration();
             }
         };

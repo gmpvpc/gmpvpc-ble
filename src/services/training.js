@@ -3,7 +3,8 @@ import Training from "~/models/dao/training";
 import Series from "~/models/dao/series";
 import {toTrainingDTO, toTrainingsDTO} from "~/models/mapper/training";
 import TrainingStatus from "~/models/dao/training-status";
-import {trainingRepository} from '~/index'
+import {seriesRepository, trainingRepository} from '~/index'
+import gloveService from './glove';
 
 const serviceName = "TrainingService";
 
@@ -11,6 +12,7 @@ class TrainingService {
 
     constructor() {
         this.currentId = null;
+        this.connectedGloves = new Map();
     }
 
     getCurrent() {
@@ -33,8 +35,10 @@ class TrainingService {
     create() {
         return new Promise((resolve, reject) => {
             logger.log(`${serviceName}(): Create...`);
+            let series = new Series();
+            series.id = 0;
             let training = new Training();
-            training.series.add(new Series());
+            training.series.push(series);
             training.status = TrainingStatus.IN_PROGRESS;
             trainingRepository.create(training)
                 .then(t => {
@@ -53,18 +57,30 @@ class TrainingService {
     update(id, data) {
         return new Promise((resolve, reject) => {
             logger.log(`${serviceName}(${id}): Update...`);
-            let trainings = [];
+            let training = [];
             trainingRepository.update(id, data)
                 .then(([r, [t]]) => {
-                    trainings = toTrainingsDTO(t);
-                    logger.log(`${serviceName}(${trainings.id}): Updated.`);
-                    resolve(trainings);
+                    training = toTrainingDTO(t);
+                    logger.log(`${serviceName}(${training.id}): Updated.`);
+                    if (training.status === TrainingStatus.FINISHED) {
+                        const gloveId = this.connectedGloves.get(training.id);
+                        if (gloveId) {
+                            gloveService.stop(gloveId);
+                        }
+                    }
+                    resolve(training);
                 })
                 .catch(err => {
                     logger.log(`${serviceName}(): Update failed - ${err}`);
                     reject();
                 });
         });
+    }
+
+    addGloveToCurrent(gloveId) {
+        if (!this.connectedGloves.get(this.currentId)) {
+            this.connectedGloves.set(this.currentId, gloveId);
+        }
     }
 
 }

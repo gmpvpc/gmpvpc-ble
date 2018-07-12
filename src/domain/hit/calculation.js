@@ -1,5 +1,6 @@
 import config from '~/config';
 import Hit from "~/models/dao/hit";
+import MathExt from "~/utils/math-extension";
 
 export default class HitCalculation {
 
@@ -9,7 +10,7 @@ export default class HitCalculation {
     }
 
     addPointCalculation(point) {
-        const norm = Math.pow(point.acceleration.x, 2) + Math.pow(point.acceleration.y, 2) + Math.pow(point.acceleration.z, 2);
+        const norm = MathExt.normal(point.accelerometer.x, point.accelerometer.y, point.accelerometer.z);
 
         if (this.lastNorms.length === config.domain.pointNumbersToAvg) {
             this.lastNorms.shift();
@@ -21,13 +22,17 @@ export default class HitCalculation {
             this.hitBeggin = Date.now();
         }
         if (this.hitBeggin && avg < 1) {
+            const duration = Date.now() - this.hitBeggin;
+            if (duration < 200 || duration > 1500) {
+                this.hitBeggin = null;
+                return null;
+            }
             const hit = new Hit();
-            hit.duration = Date.now() - this.hitBeggin;
+            hit.duration = duration;
             hit.velocity = 0.62 / hit.duration;
             this.hitBeggin = null;
             return hit;
         }
-
         return null;
     }
 }

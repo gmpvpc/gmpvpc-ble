@@ -10,6 +10,7 @@ export function toSeriesDTO(series) {
     seriesDTO.createdAt = series.createdAt;
     seriesDTO.updatedAt = series.updatedAt;
     seriesDTO.combinations = toHitsDTO(series.combinations);
+    seriesDTO.occurence = series.occurence;
     return seriesDTO;
 }
 
@@ -18,6 +19,6 @@ export function toSeriessDTO(seriess) {
         return [];
     }
     let seriessDTO = [];
-    seriess.forEach(s => seriessDTO.add(toSeriesDTO(s)));
+    seriess.forEach(s => seriessDTO.push(toSeriesDTO(s)));
     return seriessDTO;
 }

@@ -1,3 +1,4 @@
+import logger from '~/utils/logger'
 import SensorTagConnector from "./sensortag/sensortag-connector";
 import GloveDataProcessing from "./ahrs/glove-data-processing";
 
@@ -6,6 +7,7 @@ import GloveDataProcessing from "./ahrs/glove-data-processing";
  */
 export default class GloveConnector {
     constructor(gloveUuid, callback) {
+        gloveUuid = gloveUuid.toLowerCase();
         this.gloveDataProcessing = new GloveDataProcessing(1000 / SensorTagConnector.DEFAULT_PERIOD);
         this.sensorTagConnector = new SensorTagConnector(gloveUuid, (point) => this.dataRetrieval(point));
         this.callback = callback;
@@ -16,6 +18,13 @@ export default class GloveConnector {
             return null;
         }
         return this.sensorTagConnector.gloveUuid;
+    }
+
+    stop() {
+        logger.log(`GloveConnector(${this.sensorTagConnector.gloveUuid}): Stop the glove...`);
+        this.sensorTagConnector.disconnect();
+        logger.log(`GloveConnector(${this.sensorTagConnector.gloveUuid}): The glove stopped.`);
+        return true;
     }
 
     isCalibrated() {

@@ -8,5 +8,6 @@ export default class HitRepository extends Repository {
             duration: Sequelize.FLOAT(11),
             velocity: Sequelize.FLOAT(11)
         });
+        //TODO save hit vs series
     }
 }

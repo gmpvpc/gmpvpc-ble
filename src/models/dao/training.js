@@ -5,5 +5,6 @@ export default class Training extends Entity {
         super();
         this.series = [];
         this.status = null;
+        this.gloves = [];
     }
 }
