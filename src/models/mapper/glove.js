@@ -6,7 +6,6 @@ export function toGloveDTO(glove) {
     }
     let gloveDTO = new GloveDTO();
     gloveDTO.id = glove.id;
-    gloveDTO.started = glove.started;
     gloveDTO.calibrated = glove.isCalibrated();
     return gloveDTO;
 }

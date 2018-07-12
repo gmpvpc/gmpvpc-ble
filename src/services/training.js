@@ -68,7 +68,7 @@ class TrainingService {
                         if (gloveId) {
                             gloveService.stop(gloveId);
                         }
-                        rabbitConsumer.publish("training", training);
+                        rabbitConsumer.publish("training", toTrainingDTO(training));
                     }
                     resolve(training);
                 })

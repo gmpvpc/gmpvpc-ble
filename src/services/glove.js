@@ -2,6 +2,7 @@ import logger from "~/utils/logger"
 import GloveConnector from "~/domain/glove/glove-connector";
 import {Glove} from "~/models/dao/glove";
 import {toGloveDTO} from "~/models/mapper/glove";
+import {toHitDTO} from "~/models/mapper/hit";
 import {hitRepository} from '~/index';
 import trainingService from "~/services/training";
 import rabbitConsumer from '~/consumers/rabbit';
@@ -41,12 +42,12 @@ class GloveService {
         const hit = glove.hitCalculation.addPointCalculation(point);
         if (hit) {
             logger.log(`${serviceName}(${gloveConnector.getId()}): Hit detected - duration: ${hit.duration}`);
-            rabbitConsumer.publish("hit", hit);
+            rabbitConsumer.publish("hit", toHitDTO(hit));
         }
     }
 
     calibrated(id) {
-        rabbitConsumer.publish("glove", this.get(id));
+        rabbitConsumer.publish("glove", toGloveDTO(this.get(id)));
     }
 
 }

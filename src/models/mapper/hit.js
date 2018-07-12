@@ -10,6 +10,7 @@ export function toHitDTO(hit) {
     hitDTO.updatedAt = hit.updatedAt;
     hitDTO.velocity = hit.velocity;
     hitDTO.duration = hit.duration;
+    hitDTO.normals = hit.normals;
     return hitDTO;
 }
 
