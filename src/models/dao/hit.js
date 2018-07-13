@@ -6,5 +6,7 @@ export default class Hit extends Entity {
         this.velocity = null;
         this.duration = null;
         this.normals = [];
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
     }
 }
