@@ -8,5 +8,6 @@ export default class Hit extends Entity {
         this.normals = [];
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        this.seriesId = null;
     }
 }

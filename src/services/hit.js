@@ -4,12 +4,29 @@ import {toHitDTO} from "~/models/mapper/hit";
 import Series from "~/models/dao/series";
 import trainingService from "~/services/training";
 import seriesService from "~/services/series";
-import {seriesRepository} from "~/index";
+import hitService from "~/services/hit";
+import {hitRepository} from "~/index";
 
 class HitService extends LogFormat {
 
     constructor() {
         super("HitService")
+    }
+
+    create(hit) {
+        return new Promise((resolve, reject) => {
+            this.log("", "Create...");
+            hitRepository.create(hit)
+                .then(h => {
+                    hit = toHitDTO(h);
+                    this.log(hit.id, "Created.");
+                    resolve(hit);
+                })
+                .catch(err => {
+                    this.log("", `Creation failed - ${err}`);
+                    reject();
+                });
+        });
     }
 
     addHitToCurrentTraining(hit) {
@@ -20,7 +37,8 @@ class HitService extends LogFormat {
                 t.series.forEach(s => {
                     if (hit && s && s.hits < s.occurrence) {
                         const hits = s.hits +1;
-                        this.log("", JSON.stringify(s));
+                        hit.seriesId = s.id;
+                        this.create(hit);
                         seriesService.update(s.id, {hits});
                         hit = null;
                     }
@@ -30,7 +48,7 @@ class HitService extends LogFormat {
                 let series = new Series();
                 series.hits = 1;
                 series.trainingId = t.id;
-                seriesRepository.create(series);
+                hitService.create(series);
             }
             this.log("", "Hit added to the current training.");
         }).catch(err => {
