@@ -1,19 +1,19 @@
-import express from 'express';
-import logger from '~/utils/logger'
-import config from '~/config';
 import seriesService from '~/services/series'
+import Controller from "~/api/controllers/controller";
 
-const api = config.api.series;
-const controllerName = "SeriesController";
+class SeriesController extends Controller {
+    constructor() {
+        super("SeriesController");
+        this.router.get(`/:id`, (req, res) => this.get(req, res));
+    }
 
-let seriesController = express.Router();
+    get(req, res) {
+        this.log(req.params.id, `Get...`);
+        let glove = seriesService.get(req.params.id).then(s => {
+            this.log(req.params.id, `Gotten.`);
+            res.json(glove);
+        });
+    }
+}
 
-seriesController.get(`/:id`, (req, res) => {
-    logger.log(`${controllerName}(${req.params.id}): Get...`);
-    let glove = seriesService.get(req.params.id).then(s => {
-        logger.log(`${controllerName}(${req.params.id}): Gotten.`);
-        res.json(glove);
-    });
-});
-
-export default seriesController;
+export default new SeriesController();

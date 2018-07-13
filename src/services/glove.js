@@ -45,7 +45,7 @@ class GloveService extends LogFormat {
     }
 
     calibrated(id) {
-        rabbitConsumer.publish("glove", toGloveDTO(this.get(id)));
+        rabbitConsumer.publish("glove", this.get(id));
     }
 
 }

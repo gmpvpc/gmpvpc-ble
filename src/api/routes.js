@@ -5,11 +5,14 @@ import gloveController from "~/api/controllers/glove";
 import seriesController from "~/api/controllers/series";
 import deviceController from "~/api/controllers/device";
 
-let router = express.Router();
+class Routes {
+    constructor() {
+        this.router = express.Router();
+        trainingController.init(this.router, config.api.training.root);
+        gloveController.init(this.router, config.api.glove.root);
+        seriesController.init(this.router, config.api.series.root);
+        deviceController.init(this.router, config.api.device.root);
+    }
+}
 
-router.use(config.api.training.root, trainingController);
-router.use(config.api.glove.root, gloveController);
-router.use(config.api.series.root, seriesController);
-router.use(config.api.device.root, deviceController);
-
-export default router;
+export default new Routes();

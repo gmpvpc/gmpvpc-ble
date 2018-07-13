@@ -22,8 +22,12 @@ class RabbitConsumer extends LogFormat {
     publish(type, object) {
         this.log("", `Send message: ${type}`);
         const message = `${type}:${JSON.stringify(object)}`;
-        this.channel.sendToQueue(config.rabbit.queue, new Buffer(message));
-        this.log("", `Message sent: ${message}`);
+        if (this.channel) {
+            this.channel.sendToQueue(config.rabbit.queue, new Buffer(message));
+            this.log("", `Message sent: ${message}`);
+            return;
+        }
+        this.log("", `Send message failed.`);
     }
 }
 
