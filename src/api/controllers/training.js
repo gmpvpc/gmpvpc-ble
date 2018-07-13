@@ -23,7 +23,7 @@ class TrainingController extends Controller {
     create(req, res) {
         this.log("", `Create...`);
         trainingService.create(...req.body).then(t => {
-            logger.log(t.id, `Created.`);
+            this.log(t.id, `Created.`);
             res.json(t);
         });
     }

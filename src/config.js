@@ -33,7 +33,7 @@ config.glove = {
 };
 
 config.dao = {
-    uri: "postgres://gmpvpc:gmpvpc@localhost:5432/gmpvpc",
+    uri: "postgres://gmpvpc:gmpvpc@127.0.0.1:5432/gmpvpc",
     force: true
 };
 
@@ -44,7 +44,7 @@ config.domain = {
 config.rabbit = {
     queue: "gmpvpc",
     exchange: "gmpvpc",
-    url: "amqp://gmpvpc:gmpvpc@localhost:5672/gmpvpc"
+    url: "amqp://gmpvpc:gmpvpc@127.0.0.1:5672"
 };
 
 export default config;

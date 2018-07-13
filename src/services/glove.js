@@ -5,6 +5,8 @@ import {toHitDTO} from "~/models/mapper/hit";
 import trainingService from "~/services/training";
 import rabbitConsumer from '~/consumers/rabbit';
 import LogFormat from "~/utils/log-format";
+import Series from "~/models/dao/series";
+import hitService from "~/services/hit";
 
 class GloveService extends LogFormat {
     constructor() {
@@ -37,10 +39,10 @@ class GloveService extends LogFormat {
 
     dataProcessing(gloveConnector, point, movement) {
         const glove = this.gloves.get(gloveConnector.getId());
-        const hit = glove.hitCalculation.addPointCalculation(point);
+        let hit = glove.hitCalculation.addPointCalculation(point);
         if (hit) {
             this.log(gloveConnector.getId(), `Hit detected - duration: ${hit.duration}`);
-            rabbitConsumer.publish("hit", toHitDTO(hit));
+            hitService.addHitToCurrentTraining(hit);
         }
     }
 

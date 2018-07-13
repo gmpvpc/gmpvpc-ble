@@ -29,7 +29,7 @@ class SeriesService extends LogFormat {
         return new Promise((resolve, reject) => {
             this.log(id, `Update...`);
             let series = [];
-            trainingRepository.update(id, data)
+            seriesRepository.update(id, data)
                 .then(([r, [t]]) => {
                     series = toSeriesDTO(t);
                     this.log(series.id, `Updated.`);

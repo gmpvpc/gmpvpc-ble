@@ -15,6 +15,21 @@ class TrainingService extends LogFormat {
         this.connectedGloves = new Map();
     }
 
+    getCurrentDAO() {
+        return new Promise((resolve, reject) => {
+            this.log(this.currentId, "Get...");
+            trainingRepository.get(this.currentId)
+                .then(t => {
+                    this.log(this.currentId, "Gotten.");
+                    resolve(t);
+                })
+                .catch(err => {
+                    this.log("", `Get failed - ${err}`);
+                    reject();
+                });
+        });
+    }
+
     getCurrent() {
         return new Promise((resolve, reject) => {
             this.log(this.currentId, "Get...");

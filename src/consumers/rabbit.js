@@ -5,6 +5,11 @@ import LogFormat from "~/utils/log-format";
 class RabbitConsumer extends LogFormat {
     constructor() {
         super("RabbitConsumer");
+        this.channel = null;
+        this.connect();
+    }
+
+    connect(callback) {
         this.log("", `Connect...`);
         amqp.connect(config.rabbit.url, (err, conn) => {
             if (conn) {
@@ -12,6 +17,9 @@ class RabbitConsumer extends LogFormat {
                     ch.assertQueue(config.rabbit.queue, {durable: false});
                     this.channel = ch;
                     this.log("", `Connected.`);
+                    if (callback) {
+                        callback();
+                    }
                 });
             } else {
                 this.log("", `No connection - ${err}`);
@@ -25,9 +33,10 @@ class RabbitConsumer extends LogFormat {
         if (this.channel) {
             this.channel.sendToQueue(config.rabbit.queue, new Buffer(message));
             this.log("", `Message sent: ${message}`);
-            return;
+        } else {
+            this.log("", `Send message failed.`);
+            this.connect(() => publish(type, object));
         }
-        this.log("", `Send message failed.`);
     }
 }
 

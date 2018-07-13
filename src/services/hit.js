@@ -1,6 +1,10 @@
-import {toSeriesDTO} from "~/models/mapper/series";
-import {seriesRepository, trainingRepository} from '~/index'
 import LogFormat from "~/utils/log-format";
+import rabbitConsumer from "~/consumers/rabbit";
+import {toHitDTO} from "~/models/mapper/hit";
+import Series from "~/models/dao/series";
+import trainingService from "~/services/training";
+import seriesService from "~/services/series";
+import {seriesRepository} from "~/index";
 
 class HitService extends LogFormat {
 
@@ -8,36 +12,29 @@ class HitService extends LogFormat {
         super("HitService")
     }
 
-    get(seriesId) {
-        return new Promise((resolve, reject) => {
-            this.log(seriesId, `Get...`);
-            let series = null;
-            seriesRepository.get(seriesId)
-                .then(t => {
-                    series = toSeriesDTO(t);
-                    this.log(seriesId, `Gotten.`);
-                    resolve(series);
-                })
-                .catch(err => {
-                    this.log(seriesId, `Get failed - ${err}`);
-                    reject();
+    addHitToCurrentTraining(hit) {
+        this.log("", "Add hit to current training...");
+        rabbitConsumer.publish("hit", toHitDTO(hit));
+        trainingService.getCurrentDAO().then(t => {
+            if (t && t.series) {
+                t.series.forEach(s => {
+                    if (hit && s && s.hits < s.occurrence) {
+                        const hits = s.hits +1;
+                        this.log("", JSON.stringify(s));
+                        seriesService.update(s.id, {hits});
+                        hit = null;
+                    }
                 });
-        });
-    }
-
-    update(id, data) {
-        return new Promise((resolve, reject) => {
-            this.log(id, `Update...`);
-            trainingRepository.update(id, data)
-                .then(([r, [t]]) => {
-                    const series = toSeriesDTO(t);
-                    this.log(series.id, `Updated.`);
-                    resolve(series);
-                })
-                .catch(err => {
-                    this.log("", `Update failed - ${err}`);
-                    reject();
-                });
+            }
+            if (hit) {
+                let series = new Series();
+                series.hits = 1;
+                series.trainingId = t.id;
+                seriesRepository.create(series);
+            }
+            this.log("", "Hit added to the current training.");
+        }).catch(err => {
+            this.log("", `Add hit failed ${err}.`);
         });
     }
 

@@ -9,6 +9,7 @@ class Logger {
     }
 
     log(message) {
+        message = `${new Date()}: ${message}`;
         this.logStream.write(`${message}\n`);
         console.log(message);
     }
