@@ -46,7 +46,7 @@ export default class HitCalculation extends LogFormat {
                 const hit = new Hit();
                 hit.duration = duration;
                 hit.velocity = 5 / (hit.duration / 1000);
-                hit.normals = this.normalsStop;
+                hit.normals = this.normalsHit;
                 this.hitBeggin = null;
                 this.debug(`Hit ended: ${JSON.stringify(hit)}`);
                 return hit;
