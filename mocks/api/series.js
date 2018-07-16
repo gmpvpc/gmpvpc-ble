@@ -1,5 +1,5 @@
 module.exports = {
-    path: '/series/:id',
+    path: '/api/series/:id',
     template: () => {
         let randValue = (min, max) => Math.round((Math.random() * (max - min) + min)*100)/100;
         return {

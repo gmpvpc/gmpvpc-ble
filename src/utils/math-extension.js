@@ -9,4 +9,12 @@ export default class MathExt {
     static toDegree(value) {
         return value * 180 / Math.PI;
     }
+
+    static squared(value) {
+        return Math.pow(value, 2)
+    }
+
+    static normal(x, y, z) {
+        return MathExt.squared(x) + MathExt.squared(y) + MathExt.squared(z);
+    }
 }

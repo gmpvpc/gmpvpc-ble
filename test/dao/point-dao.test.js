@@ -1,8 +1,8 @@
-import PointDAO from '../../src/dao/point/point-dao';
-import DaoConfig from "../../src/dao/dao-config";
+import PointDAO from '../../src/repositories/timeseries/point-dao';
+import DaoConfig from "../../src/repositories/timeseries/config/config";
 import * as sinon from "sinon";
 import {Point} from '../../src/model/point';
-import DaoRequest from "../../src/dao/dao-request";
+import Request from "../../src/repositories/timeseries/config/request";
 
 describe("Point DAO", () => {
 
@@ -78,9 +78,9 @@ describe("Point DAO", () => {
         let mockQuery = sinon.mock(PointDAO.instance.influxdb)
             .expects("query")
             .withArgs(
-                DaoRequest.SELECT +
-                DaoRequest.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
-                DaoRequest.ORDER_BY + DaoRequest.DESC(DaoConfig.POINT_FIELD_TIME))
+                Request.SELECT +
+                Request.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
+                Request.ORDER_BY + Request.DESC(DaoConfig.POINT_FIELD_TIME))
             .resolves(Promise.resolve(data));
 
         PointDAO.instance.findAll(() => {});
@@ -94,10 +94,10 @@ describe("Point DAO", () => {
 
         let mockQuery = sinon.mock(PointDAO.instance.influxdb)
             .expects("query")
-            .withArgs(DaoRequest.SELECT +
-                DaoRequest.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
-                DaoRequest.WHERE(DaoConfig.SERIES_ID, SERIES_ID) +
-                DaoRequest.ORDER_BY + DaoRequest.ASC(DaoConfig.POINT_FIELD_TIME))
+            .withArgs(Request.SELECT +
+                Request.MEASUREMENT(DaoConfig.DB_NAME, DaoConfig.POINT_MEAS) +
+                Request.WHERE(DaoConfig.SERIES_ID, SERIES_ID) +
+                Request.ORDER_BY + Request.ASC(DaoConfig.POINT_FIELD_TIME))
             .resolves(Promise.resolve(data));
 
         PointDAO.instance.findBySeriesId(SERIES_ID, () => {});
