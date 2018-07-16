@@ -1,10 +1,12 @@
 import config from '~/config';
 import Hit from "~/models/dao/hit";
 import MathExt from "~/utils/math-extension";
+import LogFormat from "~/utils/log-format";
 
-export default class HitCalculation {
+export default class HitCalculation extends LogFormat {
 
     constructor() {
+        super("HitCalculation");
         this.hitBeggin = null;
         this.normalsStop = [];
         this.normalsHit = [];
@@ -25,6 +27,7 @@ export default class HitCalculation {
             if (norm > 10) {
                 this.hitBeggin = date;
                 this.normalsStop = [];
+                this.debug("Hit begin...")
             }
         } else if (this.normalsStop.length >= config.domain.pointNumbersToAvg) {
             const avg = this.normalsStop.map(n => n.norm).reduce((pv, cv) => pv + cv, 0) / this.normalsStop.length;
@@ -35,6 +38,7 @@ export default class HitCalculation {
                     return null;
                 }
                 if (duration > 2000) {
+                    this.debug(`Hit too long: ${duration}`);
                     this.hitBeggin = null;
                     this.normalsStop = [];
                     return null;
@@ -44,6 +48,7 @@ export default class HitCalculation {
                 hit.velocity = 5 / (hit.duration / 1000);
                 hit.normals = this.normalsStop;
                 this.hitBeggin = null;
+                this.debug(`Hit ended: ${JSON.stringify(hit)}`);
                 return hit;
             }
         }

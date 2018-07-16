@@ -11,7 +11,7 @@ class SeriesService extends LogFormat {
 
     create(series) {
         return new Promise((resolve, reject) => {
-            this.log("", "Create...");
+            this.log("Create...");
             seriesRepository.create(series)
                 .then(s => {
                     series = toHitDTO(s);
@@ -19,7 +19,7 @@ class SeriesService extends LogFormat {
                     resolve(series);
                 })
                 .catch(err => {
-                    this.log("", `Creation failed - ${err}`);
+                    this.log(`Creation failed - ${err}`);
                     reject();
                 });
         });
@@ -53,7 +53,7 @@ class SeriesService extends LogFormat {
                     resolve(series);
                 })
                 .catch(err => {
-                    this.log("", `Update failed - ${err}`);
+                    this.log(`Update failed - ${err}`);
                     reject();
                 });
         });

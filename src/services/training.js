@@ -24,7 +24,7 @@ class TrainingService extends LogFormat {
                     resolve(t);
                 })
                 .catch(err => {
-                    this.log("", `Get failed - ${err}`);
+                    this.log(`Get failed - ${err}`);
                     reject();
                 });
         });
@@ -40,7 +40,7 @@ class TrainingService extends LogFormat {
                     resolve(training);
                 })
                 .catch(err => {
-                    this.log("", `Get failed - ${err}`);
+                    this.log(`Get failed - ${err}`);
                     reject();
                 });
         });
@@ -48,7 +48,7 @@ class TrainingService extends LogFormat {
 
     create() {
         return new Promise((resolve, reject) => {
-            this.log("", "Create...");
+            this.log("Create...");
             let series = new Series();
             series.id = 0;
             let training = new Training();
@@ -62,7 +62,7 @@ class TrainingService extends LogFormat {
                     resolve(training);
                 })
                 .catch(err => {
-                    this.log("", `Creation failed - ${err}`);
+                    this.log(`Creation failed - ${err}`);
                     reject();
                 });
         });
@@ -86,7 +86,7 @@ class TrainingService extends LogFormat {
                     resolve(training);
                 })
                 .catch(err => {
-                    this.log("", `Update failed - ${err}`);
+                    this.log(`Update failed - ${err}`);
                     reject();
                 });
         });

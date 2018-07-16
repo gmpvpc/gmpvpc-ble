@@ -41,7 +41,8 @@ config.dao = {
 };
 
 config.domain = {
-    pointNumbersToAvg: 10
+    pointNumbersToAvg: 10,
+    defaultHitOccurrences: 2
 };
 
 config.rabbit = {
@@ -51,7 +52,8 @@ config.rabbit = {
 };
 
 config.debug = {
-    influx: false
+    influx: false,
+    log: true
 };
 
 export default config;

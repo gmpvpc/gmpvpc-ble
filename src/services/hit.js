@@ -4,8 +4,8 @@ import {toHitDTO} from "~/models/mapper/hit";
 import Series from "~/models/dao/series";
 import trainingService from "~/services/training";
 import seriesService from "~/services/series";
-import hitService from "~/services/hit";
 import {hitRepository} from "~/index";
+import {toTrainingDTO} from "~/models/mapper/training";
 
 class HitService extends LogFormat {
 
@@ -15,7 +15,7 @@ class HitService extends LogFormat {
 
     create(hit) {
         return new Promise((resolve, reject) => {
-            this.log("", "Create...");
+            this.log("Create...");
             hitRepository.create(hit)
                 .then(h => {
                     hit = toHitDTO(h);
@@ -23,20 +23,20 @@ class HitService extends LogFormat {
                     resolve(hit);
                 })
                 .catch(err => {
-                    this.log("", `Creation failed - ${err}`);
+                    this.log(`Creation failed - ${err}`);
                     reject();
                 });
         });
     }
 
     addHitToCurrentTraining(hit) {
-        this.log("", "Add hit to current training...");
+        this.log("Add hit to current training...");
         rabbitConsumer.publish("hit", toHitDTO(hit));
         trainingService.getCurrentDAO().then(t => {
             if (t && t.series) {
                 t.series.forEach(s => {
                     if (hit && s && s.hits < s.occurrence) {
-                        const hits = s.hits +1;
+                        const hits = s.hits + 1;
                         hit.seriesId = s.id;
                         this.create(hit);
                         seriesService.update(s.id, {hits});
@@ -48,11 +48,14 @@ class HitService extends LogFormat {
                 let series = new Series();
                 series.hits = 1;
                 series.trainingId = t.id;
-                hitService.create(series);
+                seriesService.create(series).then(s => {
+                    t.series.push(s);
+                    rabbitConsumer.publish("training", toTrainingDTO(t));
+                });
             }
-            this.log("", "Hit added to the current training.");
+            this.log("Hit added to the current training.");
         }).catch(err => {
-            this.log("", `Add hit failed ${err}.`);
+            this.log(`Add hit failed ${err}.`);
         });
     }
 
