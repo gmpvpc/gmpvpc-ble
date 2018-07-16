@@ -35,7 +35,7 @@ class RabbitConsumer extends LogFormat {
             this.log("", `Message sent: ${message}`);
         } else {
             this.log("", `Send message failed.`);
-            this.connect(() => publish(type, object));
+            this.connect(() => this.publish(type, object));
         }
     }
 }

@@ -5,7 +5,7 @@ import Request from "./config/request";
 /**
  * DAO Class to save point in InfluxDB
  */
-class Hit {
+class HitRepository {
 
     constructor() {
         this.influxdb = null;

@@ -29,7 +29,10 @@ config.api = {
 };
 
 config.glove = {
-    address: "cc78ab7e7c84"
+    address: "cc78ab7e7c84",
+    calibration: true,
+    calibrationPoint: 20,
+    defaultPeriod: 100
 };
 
 config.dao = {
@@ -38,13 +41,17 @@ config.dao = {
 };
 
 config.domain = {
-    pointNumbersToAvg: 11
+    pointNumbersToAvg: 10
 };
 
 config.rabbit = {
     queue: "gmpvpc",
     exchange: "gmpvpc",
     url: "amqp://gmpvpc:gmpvpc@127.0.0.1:5672"
+};
+
+config.debug = {
+    influx: false
 };
 
 export default config;

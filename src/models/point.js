@@ -1,4 +1,5 @@
 import SensorType from "./sensor-type";
+import config from "~/config";
 
 /**
  * Cette classe permet de stocker l'ensemble des données retournées par les trois capteurs au même endroit
@@ -16,9 +17,11 @@ export default class Point {
     }
 
     calibrate(zero) {
-        this.accelerometer.calibrate(zero.accelerometer);
-        this.gyroscope.calibrate(zero.gyroscope);
-        this.magnetometer.calibrate(zero.magnetometer);
+        if (config.glove.calibration) {
+            this.accelerometer.calibrate(zero.accelerometer);
+            this.gyroscope.calibrate(zero.gyroscope);
+            this.magnetometer.calibrate(zero.magnetometer);
+        }
         return this;
     }
 

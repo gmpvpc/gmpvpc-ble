@@ -7,6 +7,9 @@ import rabbitConsumer from '~/consumers/rabbit';
 import LogFormat from "~/utils/log-format";
 import Series from "~/models/dao/series";
 import hitService from "~/services/hit";
+import pointRepository from "~/repositories/timeseries/point";
+import config from "~/config";
+import {hitRepository} from "~/index";
 
 class GloveService extends LogFormat {
     constructor() {
@@ -38,6 +41,9 @@ class GloveService extends LogFormat {
     }
 
     dataProcessing(gloveConnector, point, movement) {
+        if (config.debug.influx) {
+            pointRepository.save(point, 1, null);
+        }
         const glove = this.gloves.get(gloveConnector.getId());
         let hit = glove.hitCalculation.addPointCalculation(point);
         if (hit) {

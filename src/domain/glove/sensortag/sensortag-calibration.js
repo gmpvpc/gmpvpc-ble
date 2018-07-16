@@ -1,15 +1,16 @@
-import logger from '~/utils/logger'
 import Coordinate from "~/models/coordinate";
 import Point from "~/models/point";
 import SensorType from "~/models/sensor-type";
-import SensorTagConnector from "./sensortag-connector";
+import LogFormat from "~/utils/log-format";
+import config from "~/config";
 
 /**
  * Calibration of a SensorTag
  */
-export default class SensorTagCalibration {
+export default class SensorTagCalibration extends LogFormat {
 
     constructor(sensorTag, callback) {
+        super("SensorTagCalibration");
         this.callback = callback;
         this.sensorTag = sensorTag;
         this.zero = new Point();
@@ -23,20 +24,20 @@ export default class SensorTagCalibration {
     }
 
     calibrate(sensorType, readCallback) {
-        logger.log("Calibrate " + sensorType + "...");
+        this.log(this.sensorTag.uuid, `Calibrate ${sensorType}...`);
         let calibratePoints = (err, x, y, z) => {
             if (x === 0 && y === 0 && z === 0) {
                 return;
             }
             this.coordinates(sensorType).add(new Coordinate().fromXYZ(x, y, z));
-            if (this.coordinates(sensorType).size >= SensorTagConnector.CALIBRATION_POINTS) {
+            if (this.coordinates(sensorType).size >= config.glove.calibrationPoint) {
                 clearInterval(interval);
                 this.zero.set(sensorType, this.calcAvg(this.coordinates(sensorType)));
-                logger.log(sensorType + " Calibrated.");
+                this.log(this.sensorTag.uuid, `${sensorType} Calibrated.`);
                 this.finishCalibration();
             }
         };
-        let interval = setInterval(() => readCallback(calibratePoints), SensorTagConnector.DEFAULT_PERIOD);
+        let interval = setInterval(() => readCallback(calibratePoints), config.glove.defaultPeriod);
     }
 
     coordinates(sensorType) {

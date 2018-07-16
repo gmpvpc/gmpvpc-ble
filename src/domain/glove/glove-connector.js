@@ -1,14 +1,16 @@
-import logger from '~/utils/logger'
 import SensorTagConnector from "./sensortag/sensortag-connector";
 import GloveDataProcessing from "./ahrs/glove-data-processing";
+import LogFormat from "~/utils/log-format";
+import config from "~/config";
 
 /**
  * Glove connector to connect, calibrate and process a new glove
  */
-export default class GloveConnector {
+export default class GloveConnector extends LogFormat {
     constructor(gloveUuid, calibratedCallback, dataRetrievalCallback) {
+        super(GloveConnector);
         gloveUuid = gloveUuid.toLowerCase();
-        this.gloveDataProcessing = new GloveDataProcessing(1000 / SensorTagConnector.DEFAULT_PERIOD);
+        this.gloveDataProcessing = new GloveDataProcessing(1000 / config.glove.defaultPeriod);
         this.sensorTagConnector = new SensorTagConnector(gloveUuid, calibratedCallback, (point) => this.dataRetrieval(point));
         this.dataRetrievalCallback = dataRetrievalCallback;
     }

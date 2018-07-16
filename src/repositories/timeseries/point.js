@@ -5,7 +5,7 @@ import Request from "./config/request";
 /**
  * DAO Class to save point in InfluxDB
  */
-class Point {
+class PointRepository {
 
     constructor() {
         this.influxdb = null;
@@ -99,4 +99,4 @@ class Point {
     }
 }
 
-export default new Point();
+export default new PointRepository();
