@@ -40,8 +40,7 @@ class HitService extends LogFormat {
                         const hits = s.hits + 1;
                         hit.seriesId = s.id;
                         this.create(hit);
-                        seriesService.update(s.id, {hits});
-                        rabbitConsumer.publish("series", toSeriesDTO(s));
+                        seriesService.update(s.id, {hits}).then((series) => rabbitConsumer.publish("series", toSeriesDTO(series)));
                         hit = null;
                     }
                 });
@@ -52,7 +51,7 @@ class HitService extends LogFormat {
                 series.trainingId = t.id;
                 seriesService.create(series).then(s => {
                     t.series.push(s);
-                    rabbitConsumer.publish("series", toSeriesDTO(s));
+                    rabbitConsumer.publish("series", toSeriesDTO(series));
                     rabbitConsumer.publish("training", toTrainingDTO(t));
                 });
             }

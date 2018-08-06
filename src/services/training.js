@@ -51,6 +51,7 @@ class TrainingService extends LogFormat {
             this.log("Create...");
             let series = new Series();
             series.id = 0;
+            series.hits = 0;
             let training = new Training();
             training.series.push(series);
             training.status = TrainingStatus.IN_PROGRESS;
