@@ -37,6 +37,7 @@ class GloveService extends LogFormat {
         const glove = this.gloves.get(id);
         if (glove) {
             glove.gloveConnector.stop();
+            this.gloves.delete(id);
         }
     }
 
