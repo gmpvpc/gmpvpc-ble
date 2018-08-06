@@ -6,6 +6,7 @@ import trainingService from "~/services/training";
 import seriesService from "~/services/series";
 import {hitRepository} from "~/index";
 import {toTrainingDTO} from "~/models/mapper/training";
+import {toSeriesDTO} from "~/models/mapper/series";
 
 class HitService extends LogFormat {
 
@@ -40,6 +41,7 @@ class HitService extends LogFormat {
                         hit.seriesId = s.id;
                         this.create(hit);
                         seriesService.update(s.id, {hits});
+                        rabbitConsumer.publish("series", toSeriesDTO(s));
                         hit = null;
                     }
                 });
@@ -50,6 +52,7 @@ class HitService extends LogFormat {
                 series.trainingId = t.id;
                 seriesService.create(series).then(s => {
                     t.series.push(s);
+                    rabbitConsumer.publish("series", toSeriesDTO(s));
                     rabbitConsumer.publish("training", toTrainingDTO(t));
                 });
             }

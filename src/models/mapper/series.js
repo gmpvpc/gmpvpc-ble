@@ -11,6 +11,7 @@ export function toSeriesDTO(series) {
     seriesDTO.updatedAt = series.updatedAt;
     seriesDTO.combinations = toHitsDTO(series.combinations);
     seriesDTO.occurrence = series.occurrence;
+    seriesDTO.hits = series.hits;
     return seriesDTO;
 }
 
