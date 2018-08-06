@@ -27,12 +27,13 @@ export default class HitCalculation extends LogFormat {
             if (norm > 10) {
                 this.hitBeggin = date;
                 this.normalsStop = [];
+                this.normalsHit = [];
                 this.debug("Hit begin...")
             }
         } else if (this.normalsStop.length >= config.domain.pointNumbersToAvg) {
+            this.normalsHit.push(norm);
             const avg = this.normalsStop.map(n => n.norm).reduce((pv, cv) => pv + cv, 0) / this.normalsStop.length;
             if (avg < 10) {
-                this.normalsHit.push(norm);
                 const duration = this.normalsStop[0].date - this.hitBeggin;
                 if (duration < 200) {
                     return null;
@@ -41,6 +42,7 @@ export default class HitCalculation extends LogFormat {
                     this.debug(`Hit too long: ${duration}`);
                     this.hitBeggin = null;
                     this.normalsStop = [];
+                    this.normalsHit = [];
                     return null;
                 }
                 const hit = new Hit();
