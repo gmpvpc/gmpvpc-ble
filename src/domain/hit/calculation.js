@@ -20,7 +20,7 @@ export default class HitCalculation extends LogFormat {
             this.hitBegin(norm);
         } else if (this.normalsStop.length >= config.domain.pointNumbersToAvg) {
             this.normalsHit.push(norm);
-            const avg = this.normalsStop.map(n => n.norm).reduce((pv, cv) => pv + cv, 0) / this.normalsStop.length;
+            const avg = MathExt.average(this.normalsStop);
             if (avg < 10) {
                 return this.hitFinish();
             }

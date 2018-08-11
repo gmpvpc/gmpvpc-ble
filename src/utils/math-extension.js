@@ -17,4 +17,8 @@ export default class MathExt {
     static normal(x, y, z) {
         return MathExt.squared(x) + MathExt.squared(y) + MathExt.squared(z);
     }
+
+    static average(points) {
+        return points.map(n => n.norm).reduce((pv, cv) => pv + cv, 0) / points.length;
+    }
 }
