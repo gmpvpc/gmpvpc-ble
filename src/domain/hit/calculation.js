@@ -12,6 +12,22 @@ export default class HitCalculation extends LogFormat {
         this.normalsHit = [];
     }
 
+    addPointCalculation(point) {
+        const norm = MathExt.normal(point.accelerometer.x, point.accelerometer.y, point.accelerometer.z);
+        const date = Date.now();
+        this.addNormalStop({norm, date});
+        if (!this.hitBeggin) {
+            this.hitBegin(norm);
+        } else if (this.normalsStop.length >= config.domain.pointNumbersToAvg) {
+            this.normalsHit.push(norm);
+            const avg = this.normalsStop.map(n => n.norm).reduce((pv, cv) => pv + cv, 0) / this.normalsStop.length;
+            if (avg < 10) {
+                return this.hitFinish();
+            }
+        }
+        return null;
+    }
+
     addNormalStop(normal) {
         this.normalsStop.push(normal);
         if (this.normalsStop.length > config.domain.pointNumbersToAvg) {
@@ -19,41 +35,37 @@ export default class HitCalculation extends LogFormat {
         }
     }
 
-    addPointCalculation(point) {
-        const norm = MathExt.normal(point.accelerometer.x, point.accelerometer.y, point.accelerometer.z);
-        const date = Date.now();
-        this.addNormalStop({norm, date});
-        if (!this.hitBeggin) {
-            if (norm > 10) {
-                this.hitBeggin = date;
-                this.normalsStop = [];
-                this.normalsHit = [];
-                this.debug("Hit begin...")
-            }
-        } else if (this.normalsStop.length >= config.domain.pointNumbersToAvg) {
-            this.normalsHit.push(norm);
-            const avg = this.normalsStop.map(n => n.norm).reduce((pv, cv) => pv + cv, 0) / this.normalsStop.length;
-            if (avg < 10) {
-                const duration = this.normalsStop[0].date - this.hitBeggin;
-                if (duration < 200) {
-                    return null;
-                }
-                if (duration > 2000) {
-                    this.debug(`Hit too long: ${duration}`);
-                    this.hitBeggin = null;
-                    this.normalsStop = [];
-                    this.normalsHit = [];
-                    return null;
-                }
-                const hit = new Hit();
-                hit.duration = duration;
-                hit.velocity = 5 / (hit.duration / 1000);
-                hit.normals = this.normalsHit;
-                this.hitBeggin = null;
-                this.debug(`Hit ended: ${JSON.stringify(hit)}`);
-                return hit;
-            }
+    hitBegin(norm) {
+        if (norm > 10) {
+            this.hitBeggin = date;
+            this.normalsStop = [];
+            this.normalsHit = [];
+            this.debug("Hit begin...")
         }
-        return null;
+    }
+
+    hitFinish() {
+        const duration = this.normalsStop[0].date - this.hitBeggin;
+        this.limitHitDuration(duration);
+        const hit = new Hit();
+        hit.duration = duration;
+        hit.velocity = 5 / (hit.duration / 1000);
+        hit.normals = this.normalsHit;
+        this.hitBeggin = null;
+        this.debug(`Hit ended: ${JSON.stringify(hit)}`);
+        return hit;
+    }
+
+    limitHitDuration(duration) {
+        if (duration < 200) {
+            return null;
+        }
+        if (duration > 2000) {
+            this.debug(`Hit too long: ${duration}`);
+            this.hitBeggin = null;
+            this.normalsStop = [];
+            this.normalsHit = [];
+            return null;
+        }
     }
 }
