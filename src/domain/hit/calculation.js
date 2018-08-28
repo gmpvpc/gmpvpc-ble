@@ -17,7 +17,7 @@ export default class HitCalculation extends LogFormat {
         const date = Date.now();
         this.addNormalStop({norm, date});
         if (!this.hitBeggin) {
-            this.hitBegin(norm);
+            this.hitBegin(norm, date);
         } else if (this.normalsStop.length >= config.domain.pointNumbersToAvg) {
             this.normalsHit.push(norm);
             const avg = MathExt.average(this.normalsStop);
@@ -35,7 +35,7 @@ export default class HitCalculation extends LogFormat {
         }
     }
 
-    hitBegin(norm) {
+    hitBegin(norm, date) {
         if (norm > 10) {
             this.hitBeggin = date;
             this.normalsStop = [];
