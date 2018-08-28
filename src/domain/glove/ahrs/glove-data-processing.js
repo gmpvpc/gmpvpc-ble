@@ -1,5 +1,4 @@
 import AHRS from 'ahrs/index';
-import logger from '~/utils/logger'
 import Movement from "~/models/movement";
 import MathExt from "~/utils/math-extension"
 

@@ -23,9 +23,9 @@ export default class GloveConnector extends LogFormat {
     }
 
     stop() {
-        logger.log(`GloveConnector(${this.sensorTagConnector.gloveUuid}): Stop the glove...`);
+        this.log(`GloveConnector(${this.sensorTagConnector.gloveUuid}): Stop the glove...`);
         this.sensorTagConnector.disconnect();
-        logger.log(`GloveConnector(${this.sensorTagConnector.gloveUuid}): The glove stopped.`);
+        this.log(`GloveConnector(${this.sensorTagConnector.gloveUuid}): The glove stopped.`);
         return true;
     }
 
