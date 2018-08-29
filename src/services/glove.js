@@ -45,6 +45,9 @@ class GloveService extends LogFormat {
         if (config.debug.influx) {
             pointRepository.save(point, 1, null);
         }
+        if (!this.gloves.has(gloveConnector.getId())) {
+            return;
+        }
         const glove = this.gloves.get(gloveConnector.getId());
         let hit = glove.hitCalculation.addPointCalculation(point);
         if (hit) {
